@@ -1,0 +1,25 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: Place_Inicial, typ: discrete, variable name: m1, initial marking: 1, capacity: -1, key: 0
+     Name: Place_Buffer, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: Place_Contador, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+ 
+Transitions
+     name: Trans_Inicial, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 3
+     name: Trans_Final, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 4
+ 
+Arcs
+     from Place_Inicial (key=0) to Trans_Inicial (key=3), typ: normal, weight: 1
+     from Trans_Inicial (key=3) to Place_Buffer (key=1), typ: normal, weight: 1
+     from Place_Buffer (key=1) to Trans_Final (key=4), typ: normal, weight: 1
+     from Trans_Final (key=4) to Place_Contador (key=2), typ: normal, weight: 2
+     from Trans_Final (key=4) to Place_Inicial (key=0), typ: normal, weight: 1
+ 

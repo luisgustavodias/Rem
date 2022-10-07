@@ -1,0 +1,34 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: PC, typ: discrete, variable name: m1, initial marking: 0, capacity: -1, key: 0
+     Name: PA, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: PE, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: PD, typ: discrete, variable name: m4, initial marking: 0, capacity: -1, key: 3
+ 
+Transitions
+     name: TA, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 4
+     name: TB, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 5
+     name: TC, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 6
+     name: TD, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 7
+ 
+Arcs
+     from TC (key=6) to PC (key=0), typ: normal, weight: 5
+     from PA (key=1) to TA (key=4), typ: normal, weight: 2
+     from TA (key=4) to PD (key=3), typ: normal, weight: 1
+     from TC (key=6) to PA (key=1), typ: normal, weight: 4
+     from TB (key=5) to PC (key=0), typ: normal, weight: 3
+     from PA (key=1) to TB (key=5), typ: normal, weight: 7
+     from TA (key=4) to PE (key=2), typ: normal, weight: 1
+     from PE (key=2) to TD (key=7), typ: normal, weight: 8
+     from PC (key=0) to TA (key=4), typ: normal, weight: 9
+     from PD (key=3) to TD (key=7), typ: normal, weight: 7
+     from PD (key=3) to TC (key=6), typ: normal, weight: 6
+ 

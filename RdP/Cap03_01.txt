@@ -1,0 +1,33 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: P1, typ: discrete, variable name: m1, initial marking: 2, capacity: -1, key: 0
+     Name: P3, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: P4, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: P2, typ: discrete, variable name: m4, initial marking: 0, capacity: -1, key: 3
+ 
+Transitions
+     name: T3, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 4
+     name: T2, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 5
+     name: T1, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 6
+     name: T4, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 7
+ 
+Arcs
+     from P1 (key=0) to T1 (key=6), typ: normal, weight: 1
+     from T1 (key=6) to P3 (key=1), typ: normal, weight: 1
+     from T1 (key=6) to P2 (key=3), typ: normal, weight: 1
+     from P3 (key=1) to T2 (key=5), typ: normal, weight: 1
+     from P2 (key=3) to T2 (key=5), typ: normal, weight: 1
+     from T2 (key=5) to P1 (key=0), typ: normal, weight: 1
+     from P3 (key=1) to T3 (key=4), typ: normal, weight: 1
+     from T3 (key=4) to P4 (key=2), typ: normal, weight: 1
+     from P4 (key=2) to T4 (key=7), typ: normal, weight: 1
+     from T4 (key=7) to P3 (key=1), typ: normal, weight: 1
+ 

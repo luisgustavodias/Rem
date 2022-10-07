@@ -1,0 +1,60 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: r01_Aguardando, typ: discrete, variable name: m1, initial marking: 1, capacity: -1, key: 0
+     Name: r01_Trabalhando, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: r01_Emerg, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: Tarefa solicitada, typ: discrete, variable name: m4, initial marking: 0, capacity: -1, key: 3
+     Name: Tarefa finalizada, typ: discrete, variable name: m5, initial marking: 1, capacity: -1, key: 4
+     Name: r02_Emerg, typ: discrete, variable name: m8, initial marking: 0, capacity: -1, key: 5
+     Name: r02_Trabalhando, typ: discrete, variable name: m9, initial marking: 0, capacity: -1, key: 6
+     Name: r02_Aguardando, typ: discrete, variable name: m10, initial marking: 1, capacity: -1, key: 7
+ 
+Transitions
+     name: r01_Iniciando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 8
+     name: r01_Parando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 9
+     name: r01_Corrigido, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 10
+     name: r01_Danificado, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 11
+     name: r01_Descartando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 12
+     name: r02_Descartando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 13
+     name: r02_Danificado, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 14
+     name: r02_Corrigido, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 15
+     name: r02_Parando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 16
+     name: r02_Iniciando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 17
+     name: Requisitando, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 18
+ 
+Arcs
+     from r01_Aguardando (key=0) to r01_Iniciando (key=8), typ: normal, weight: 1
+     from r01_Iniciando (key=8) to r01_Trabalhando (key=1), typ: normal, weight: 1
+     from r01_Trabalhando (key=1) to r01_Parando (key=9), typ: normal, weight: 1
+     from r01_Danificado (key=11) to r01_Emerg (key=2), typ: normal, weight: 1
+     from r01_Trabalhando (key=1) to r01_Danificado (key=11), typ: normal, weight: 1
+     from r01_Parando (key=9) to r01_Aguardando (key=0), typ: normal, weight: 1
+     from r01_Emerg (key=2) to r01_Corrigido (key=10), typ: normal, weight: 1
+     from r02_Parando (key=16) to r02_Aguardando (key=7), typ: normal, weight: 1
+     from r02_Trabalhando (key=6) to r02_Danificado (key=14), typ: normal, weight: 1
+     from r02_Danificado (key=14) to r02_Emerg (key=5), typ: normal, weight: 1
+     from r02_Trabalhando (key=6) to r02_Parando (key=16), typ: normal, weight: 1
+     from r02_Iniciando (key=17) to r02_Trabalhando (key=6), typ: normal, weight: 1
+     from r02_Aguardando (key=7) to r02_Iniciando (key=17), typ: normal, weight: 1
+     from r02_Emerg (key=5) to r02_Corrigido (key=15), typ: normal, weight: 1
+     from Tarefa solicitada (key=3) to r01_Iniciando (key=8), typ: normal, weight: 1
+     from Tarefa solicitada (key=3) to r02_Iniciando (key=17), typ: normal, weight: 1
+     from Requisitando (key=18) to Tarefa solicitada (key=3), typ: normal, weight: 1
+     from Tarefa finalizada (key=4) to Requisitando (key=18), typ: normal, weight: 1
+     from r01_Parando (key=9) to Tarefa finalizada (key=4), typ: normal, weight: 1
+     from r02_Parando (key=16) to Tarefa finalizada (key=4), typ: normal, weight: 1
+     from r02_Emerg (key=5) to r02_Descartando (key=13), typ: normal, weight: 1
+     from r02_Corrigido (key=15) to r02_Aguardando (key=7), typ: normal, weight: 1
+     from r02_Descartando (key=13) to r02_Aguardando (key=7), typ: normal, weight: 1
+     from r01_Corrigido (key=10) to r01_Aguardando (key=0), typ: normal, weight: 1
+     from r01_Descartando (key=12) to r01_Aguardando (key=0), typ: normal, weight: 1
+     from r01_Emerg (key=2) to r01_Descartando (key=12), typ: normal, weight: 1
+ 

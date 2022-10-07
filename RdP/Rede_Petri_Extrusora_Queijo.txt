@@ -1,0 +1,209 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: EST: Desligado| , typ: discrete, variable name: m1, initial marking: 1, capacity: -1, key: 0
+     Name: Extrusora|Ligada, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: Esteira|Fomas|ON, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: Esteira|Conjunto de Fomas|Ligada, typ: discrete, variable name: m4, initial marking: 0, capacity: -1, key: 3
+     Name: Nivel|Tanque|Baixo, typ: discrete, variable name: m5, initial marking: 0, capacity: -1, key: 4
+     Name: Nível|Tanque| Alto, typ: discrete, variable name: m6, initial marking: 0, capacity: -1, key: 5
+     Name: Sensor|Presença|Forma Vazia, typ: discrete, variable name: m7, initial marking: 0, capacity: -1, key: 6
+     Name: Atuador|Lateral|Avançando, typ: discrete, variable name: m8, initial marking: 0, capacity: -1, key: 7
+     Name: Atuador|Lateral|Recuando, typ: discrete, variable name: m9, initial marking: 0, capacity: -1, key: 8
+     Name: Quantidade|Formas|Pilha, typ: discrete, variable name: m10, initial marking: 0, capacity: -1, key: 9
+     Name: Atuador|Traseiro|Recuando, typ: discrete, variable name: m11, initial marking: 0, capacity: -1, key: 10
+     Name: Atuador|Traseiro|Recuado, typ: discrete, variable name: m12, initial marking: 1, capacity: -1, key: 11
+     Name: Botão|Liga, typ: discrete, variable name: m17, initial marking: 0, capacity: -1, key: 12
+     Name: EST:Ligado, typ: discrete, variable name: m18, initial marking: 0, capacity: -1, key: 13
+     Name: Entrada|Extrusora Fechada, typ: discrete, variable name: m19, initial marking: 1, capacity: -1, key: 14
+     Name: Entrada da|Extrusora Aberta, typ: discrete, variable name: m20, initial marking: 0, capacity: -1, key: 15
+     Name: Botão|Desliga, typ: discrete, variable name: m21, initial marking: 0, capacity: -1, key: 16
+     Name: Atuador|Lateral|Recuado, typ: discrete, variable name: m22, initial marking: 1, capacity: -1, key: 17
+     Name: Stop|Blade|Elevada, typ: discrete, variable name: m15, initial marking: 1, capacity: -1, key: 18
+     Name: Stop Blade|Abaixada, typ: discrete, variable name: m24, initial marking: 0, capacity: -1, key: 19
+     Name: Válvula|de Entrada|Forma Padrão|Aberta, typ: discrete, variable name: m25, initial marking: 0, capacity: -1, key: 20
+     Name: Válvula |de Entrada|Forma Padrão|Fechada, typ: discrete, variable name: m26, initial marking: 1, capacity: -1, key: 21
+     Name: Extrusora|Desligada, typ: discrete, variable name: m27, initial marking: 1, capacity: -1, key: 22
+     Name: Esteira|Fomas|OFF, typ: discrete, variable name: m30, initial marking: 1, capacity: -1, key: 23
+     Name: Formas|Vazias na|Esteira, typ: discrete, variable name: m31, initial marking: 3000, capacity: -1, key: 24
+     Name: Primeira|Extrusao, typ: discrete, variable name: m29, initial marking: 0, capacity: -1, key: 25
+     Name: Queijo|Em Formas|Na Posição, typ: discrete, variable name: m32, initial marking: 0, capacity: -1, key: 26
+     Name: Atuador|Traseiro|Avançando|Curto, typ: discrete, variable name: m23, initial marking: 0, capacity: -1, key: 27
+     Name: Sensor|Forma Com|Queijo, typ: discrete, variable name: m33, initial marking: 1, capacity: -1, key: 28
+     Name: Quantidade|Pilhas, typ: discrete, variable name: m34, initial marking: 3, capacity: -1, key: 29
+     Name: Atuador|Traseiro|Avançando|Longo, typ: discrete, variable name: m35, initial marking: 0, capacity: -1, key: 30
+     Name: Atuador|Traseiro|Recuando|Longo, typ: discrete, variable name: m16, initial marking: 1, capacity: -1, key: 31
+     Name: Volume|Extrusora, typ: continuous, variable name: m13, initial marking: 0, key: 32
+     Name: Volume|Na Forma, typ: continuous, variable name: m36, initial marking: 0, key: 33
+     Name: Quantidade de|Queijos Produzidos, typ: discrete, variable name: m37, initial marking: 0, capacity: -1, key: 34
+     Name: Volume|Soro, typ: continuous, variable name: m28, initial marking: 0, key: 35
+     Name: Sensor|Palete, typ: discrete, variable name: m38, initial marking: 1, capacity: -1, key: 36
+     Name: Paletes, typ: discrete, variable name: m39, initial marking: 500, capacity: -1, key: 37
+     Name: Válvula|de Saída|Forma Padrão|Aberta, typ: discrete, variable name: m40, initial marking: 0, capacity: -1, key: 38
+     Name: Válvula|de Saída|Forma Padrão|Fechada, typ: discrete, variable name: m41, initial marking: 1, capacity: -1, key: 39
+     Name: Sensor Nível|Extrusora, typ: discrete, variable name: m42, initial marking: 0, capacity: -1, key: 40
+     Name: Esteira|Conjunto de Fomas|Desligado, typ: discrete, variable name: m14, initial marking: 1, capacity: -1, key: 41
+ 
+Transitions
+     name: Ligar, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 42
+     name: Desligar, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 43
+     name: Ligando|Extrusora, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 44
+     name: Abrir|Válvula de|Entrada Extrusora, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 45
+     name: Fechando|Válvula de|Entrada Extrusora, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 46
+     name: Ligando|Esteira|Formas, typ: discrete, firing time: 2, priority: 1, reservation: 0, key: 47
+     name: Primeira|Extrusao, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 48
+     name: Parando|Esteira|Formas, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 49
+     name: Forma|Aproximando, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 50
+     name: Forma|Padrão|Encheu, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 51
+     name: Desligar|Esteira, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 52
+     name: Desligar|Extrusora, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 53
+     name: Tempo|Avanço|Curto, typ: discrete, firing time: 3, priority: 1, reservation: 0, key: 54
+     name: Tempo|Recuo|Curto, typ: discrete, firing time: 3, priority: 1, reservation: 0, key: 55
+     name: Elevando|Stop|Blade, typ: discrete, firing time: 6, priority: 1, reservation: 0, key: 56
+     name: Empurrar|Forma, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 57
+     name: Empurrar|Pilha, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 58
+     name: Tempo|Avanço|Lateral, typ: discrete, firing time: 5, priority: 1, reservation: 0, key: 59
+     name: Tempo|Recuo|Lateral, typ: discrete, firing time: 3, priority: 1, reservation: 0, key: 60
+     name: Tempo|Avanço|Longo, typ: discrete, firing time: 8, priority: 1, reservation: 0, key: 61
+     name: Tempo|Recuo|Longo, typ: discrete, firing time: 8, priority: 1, reservation: 0, key: 62
+     name: Abaixando|Stop|Blade, typ: discrete, firing time: 3, priority: 1, reservation: 0, key: 63
+     name: Vazão de|Entrada (m^3/s):, typ: continuous, Speed function: 0,020, key: 64
+     name: Vazão de|Saída (m^3/s):, typ: continuous, Speed function: 0,01875, key: 65
+     name: Vazão de|Soro (m^3/s), typ: continuous, Speed function: 0,00125, key: 66
+     name: TIMER:|Enchendo|Forma Vazia, typ: discrete, firing time: 3, priority: 1, reservation: 0, key: 67
+     name: Ligando Esteira|de Paletes, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 68
+     name: Desligando Esteira|de Paletes, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 69
+     name: Aproximando|Palete, typ: discrete, firing time: 8, priority: 1, reservation: 0, key: 70
+     name: Nível Caiu, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 71
+ 
+Arcs
+     from Atuador|Lateral|Avançando (key=7) to Tempo|Avanço|Lateral (key=59), typ: normal, weight: 1
+     from Tempo|Avanço|Lateral (key=59) to Atuador|Lateral|Recuando (key=8), typ: normal, weight: 1
+     from Atuador|Lateral|Recuando (key=8) to Tempo|Recuo|Lateral (key=60), typ: normal, weight: 1
+     from Tempo|Avanço|Lateral (key=59) to Quantidade|Pilhas (key=29), typ: normal, weight: 1
+     from Tempo|Recuo|Lateral (key=60) to Atuador|Lateral|Recuado (key=17), typ: normal, weight: 1
+     from Atuador|Lateral|Recuado (key=17) to Empurrar|Pilha (key=58), typ: normal, weight: 1
+     from Empurrar|Pilha (key=58) to Atuador|Lateral|Avançando (key=7), typ: normal, weight: 1
+     from Tempo|Avanço|Curto (key=54) to Atuador|Traseiro|Recuando (key=10), typ: normal, weight: 1
+     from Tempo|Recuo|Curto (key=55) to Atuador|Traseiro|Recuado (key=11), typ: normal, weight: 1
+     from Forma|Aproximando (key=50) to Sensor|Presença|Forma Vazia (key=6), typ: normal, weight: 1
+     from Ligar (key=42) to EST:Ligado (key=13), typ: normal, weight: 1
+     from EST:Ligado (key=13) to Desligar (key=43), typ: normal, weight: 1
+     from Formas|Vazias na|Esteira (key=24) to Forma|Aproximando (key=50), typ: normal, weight: 1
+     from Vazão de|Saída (m^3/s): (key=65) to Volume|Na Forma (key=33), typ: normal, weight: 1
+     from EST: Desligado|  (key=0) to Ligar (key=42), typ: normal, weight: 1
+     from Entrada da|Extrusora Aberta (key=15) to Fechando|Válvula de|Entrada Extrusora (key=46), typ: normal, weight: 1
+     from Volume|Extrusora (key=32) to Vazão de|Soro (m^3/s) (key=66), typ: normal, weight: 1
+     from Desligar (key=43) to Entrada|Extrusora Fechada (key=14), typ: normal, weight: 1
+     from Botão|Liga (key=12) to Ligar (key=42), typ: normal, weight: 1
+     from Primeira|Extrusao (key=25) to Primeira|Extrusao (key=48), typ: inhibitor, weight: 1
+     from Primeira|Extrusao (key=48) to Primeira|Extrusao (key=25), typ: normal, weight: 1
+     from Vazão de|Entrada (m^3/s): (key=64) to Volume|Extrusora (key=32), typ: normal, weight: 1
+     from Volume|Na Forma (key=33) to Primeira|Extrusao (key=48), typ: test arc, weight: 3,375
+     from Entrada|Extrusora Fechada (key=14) to Abrir|Válvula de|Entrada Extrusora (key=45), typ: normal, weight: 1
+     from Abrir|Válvula de|Entrada Extrusora (key=45) to Entrada da|Extrusora Aberta (key=15), typ: normal, weight: 1
+     from Válvula|de Entrada|Forma Padrão|Aberta (key=20) to Primeira|Extrusao (key=48), typ: normal, weight: 1
+     from Válvula|de Entrada|Forma Padrão|Aberta (key=20) to Vazão de|Saída (m^3/s): (key=65), typ: test arc, weight: 1
+     from Primeira|Extrusao (key=48) to Válvula |de Entrada|Forma Padrão|Fechada (key=21), typ: normal, weight: 1
+     from Primeira|Extrusao (key=48) to Extrusora|Desligada (key=22), typ: normal, weight: 1
+     from Volume|Extrusora (key=32) to Vazão de|Saída (m^3/s): (key=65), typ: normal, weight: 1
+     from Extrusora|Desligada (key=22) to Ligando|Extrusora (key=44), typ: normal, weight: 1
+     from Desligar|Extrusora (key=53) to Extrusora|Desligada (key=22), typ: normal, weight: 1
+     from Extrusora|Ligada (key=1) to Vazão de|Soro (m^3/s) (key=66), typ: test arc, weight: 1
+     from Esteira|Fomas|ON (key=2) to Forma|Aproximando (key=50), typ: test arc, weight: 1
+     from Extrusora|Ligada (key=1) to Forma|Padrão|Encheu (key=51), typ: normal, weight: 1
+     from Ligando Esteira|de Paletes (key=68) to Esteira|Conjunto de Fomas|Ligada (key=3), typ: normal, weight: 1
+     from Sensor|Palete (key=36) to Desligando Esteira|de Paletes (key=69), typ: test arc, weight: 1
+     from Esteira|Conjunto de Fomas|Ligada (key=3) to Aproximando|Palete (key=70), typ: test arc, weight: 1
+     from Válvula|de Saída|Forma Padrão|Aberta (key=38) to TIMER:|Enchendo|Forma Vazia (key=67), typ: normal, weight: 1
+     from TIMER:|Enchendo|Forma Vazia (key=67) to Válvula|de Saída|Forma Padrão|Fechada (key=39), typ: normal, weight: 1
+     from Tempo|Avanço|Longo (key=61) to Atuador|Traseiro|Recuando|Longo (key=31), typ: normal, weight: 1
+     from Stop|Blade|Elevada (key=18) to Abaixando|Stop|Blade (key=63), typ: normal, weight: 1
+     from Atuador|Traseiro|Recuando|Longo (key=31) to Tempo|Recuo|Longo (key=62), typ: normal, weight: 1
+     from Tempo|Recuo|Longo (key=62) to Atuador|Traseiro|Recuado (key=11), typ: normal, weight: 1
+     from Atuador|Traseiro|Avançando|Longo (key=30) to Tempo|Avanço|Longo (key=61), typ: normal, weight: 1
+     from Queijo|Em Formas|Na Posição (key=26) to Empurrar|Forma (key=57), typ: normal, weight: 1
+     from Entrada da|Extrusora Aberta (key=15) to Vazão de|Entrada (m^3/s): (key=64), typ: test arc, weight: 1
+     from Esteira|Fomas|ON (key=2) to Desligar|Esteira (key=52), typ: normal, weight: 1
+     from Esteira|Fomas|OFF (key=23) to Ligando|Esteira|Formas (key=47), typ: normal, weight: 1
+     from Paletes (key=37) to Aproximando|Palete (key=70), typ: normal, weight: 1
+     from Aproximando|Palete (key=70) to Sensor|Palete (key=36), typ: normal, weight: 1
+     from Esteira|Conjunto de Fomas|Desligado (key=41) to Ligando Esteira|de Paletes (key=68), typ: normal, weight: 1
+     from Stop Blade|Abaixada (key=19) to Elevando|Stop|Blade (key=56), typ: normal, weight: 1
+     from Desligando Esteira|de Paletes (key=69) to Esteira|Conjunto de Fomas|Desligado (key=41), typ: normal, weight: 1
+     from Empurrar|Forma (key=57) to Quantidade de|Queijos Produzidos (key=34), typ: normal, weight: 1
+     from Esteira|Conjunto de Fomas|Ligada (key=3) to Desligando Esteira|de Paletes (key=69), typ: normal, weight: 1
+     from Sensor|Palete (key=36) to Ligando Esteira|de Paletes (key=68), typ: normal, weight: 1
+     from Vazão de|Soro (m^3/s) (key=66) to Volume|Soro (key=35), typ: normal, weight: 1
+     from Botão|Desliga (key=16) to Desligar (key=43), typ: normal, weight: 1
+     from Botão|Desliga (key=16) to Ligar (key=42), typ: inhibitor, weight: 1
+     from Válvula |de Entrada|Forma Padrão|Fechada (key=21) to Ligando|Extrusora (key=44), typ: normal, weight: 1
+     from Extrusora|Ligada (key=1) to Vazão de|Entrada (m^3/s): (key=64), typ: test arc, weight: 1
+     from Extrusora|Ligada (key=1) to Desligar|Extrusora (key=53), typ: normal, weight: 1
+     from Ligando|Esteira|Formas (key=47) to Esteira|Fomas|ON (key=2), typ: normal, weight: 1
+     from Parando|Esteira|Formas (key=49) to Esteira|Fomas|OFF (key=23), typ: normal, weight: 1
+     from Válvula|de Saída|Forma Padrão|Aberta (key=38) to Ligando|Esteira|Formas (key=47), typ: inhibitor, weight: 1
+     from Extrusora|Desligada (key=22) to Ligando|Esteira|Formas (key=47), typ: test arc, weight: 1
+     from Válvula|de Saída|Forma Padrão|Fechada (key=39) to Ligando|Esteira|Formas (key=47), typ: test arc, weight: 1
+     from Entrada da|Extrusora Aberta (key=15) to Ligando|Extrusora (key=44), typ: test arc, weight: 1
+     from Válvula|de Saída|Forma Padrão|Aberta (key=38) to Ligando|Extrusora (key=44), typ: inhibitor, weight: 1
+     from Ligando|Extrusora (key=44) to Válvula|de Entrada|Forma Padrão|Aberta (key=20), typ: normal, weight: 1
+     from Ligando|Extrusora (key=44) to Extrusora|Ligada (key=1), typ: normal, weight: 1
+     from Extrusora|Ligada (key=1) to Primeira|Extrusao (key=48), typ: normal, weight: 1
+     from Desligar (key=43) to EST: Desligado|  (key=0), typ: normal, weight: 1
+     from Sensor|Presença|Forma Vazia (key=6) to Ligando|Extrusora (key=44), typ: test arc, weight: 1
+     from Primeira|Extrusao (key=25) to Forma|Padrão|Encheu (key=51), typ: test arc, weight: 1
+     from Válvula|de Saída|Forma Padrão|Fechada (key=39) to Forma|Padrão|Encheu (key=51), typ: normal, weight: 1
+     from Sensor Nível|Extrusora (key=40) to Forma|Padrão|Encheu (key=51), typ: test arc, weight: 1
+     from Válvula|de Entrada|Forma Padrão|Aberta (key=20) to Forma|Padrão|Encheu (key=51), typ: normal, weight: 1
+     from Forma|Padrão|Encheu (key=51) to Extrusora|Desligada (key=22), typ: normal, weight: 1
+     from Sensor|Presença|Forma Vazia (key=6) to Forma|Padrão|Encheu (key=51), typ: normal, weight: 1
+     from Volume|Na Forma (key=33) to Forma|Padrão|Encheu (key=51), typ: normal, weight: 3,375
+     from Forma|Padrão|Encheu (key=51) to Válvula |de Entrada|Forma Padrão|Fechada (key=21), typ: normal, weight: 1
+     from Forma|Padrão|Encheu (key=51) to Válvula|de Saída|Forma Padrão|Aberta (key=38), typ: normal, weight: 1
+     from Quantidade|Formas|Pilha (key=9) to Empurrar|Pilha (key=58), typ: normal, weight: 3
+     from Entrada da|Extrusora Aberta (key=15) to Desligar (key=43), typ: normal, weight: 1
+     from Tempo|Avanço|Curto (key=54) to Quantidade|Formas|Pilha (key=9), typ: normal, weight: 1
+     from Atuador|Traseiro|Recuado (key=11) to Tempo|Avanço|Curto (key=54), typ: normal, weight: 1
+     from Abaixando|Stop|Blade (key=63) to Stop Blade|Abaixada (key=19), typ: normal, weight: 1
+     from Atuador|Traseiro|Recuado (key=11) to Elevando|Stop|Blade (key=56), typ: normal, weight: 1
+     from Nivel|Tanque|Baixo (key=4) to Nível Caiu (key=71), typ: inhibitor, weight: 1
+     from Nível Caiu (key=71) to Entrada|Extrusora Fechada (key=14), typ: normal, weight: 1
+     from Entrada da|Extrusora Aberta (key=15) to Nível Caiu (key=71), typ: normal, weight: 1
+     from Nivel|Tanque|Baixo (key=4) to Ligando|Esteira|Formas (key=47), typ: test arc, weight: 1
+     from Nivel|Tanque|Baixo (key=4) to Abrir|Válvula de|Entrada Extrusora (key=45), typ: test arc, weight: 1
+     from EST:Ligado (key=13) to Abrir|Válvula de|Entrada Extrusora (key=45), typ: test arc, weight: 1
+     from EST:Ligado (key=13) to Ligando|Esteira|Formas (key=47), typ: test arc, weight: 1
+     from EST:Ligado (key=13) to Ligando|Extrusora (key=44), typ: test arc, weight: 1
+     from Ligar (key=42) to Sensor|Presença|Forma Vazia (key=6), typ: normal, weight: 1
+     from Fechando|Válvula de|Entrada Extrusora (key=46) to Entrada|Extrusora Fechada (key=14), typ: normal, weight: 1
+     from EST:Ligado (key=13) to Fechando|Válvula de|Entrada Extrusora (key=46), typ: inhibitor, weight: 1
+     from Botão|Desliga (key=16) to Desligar|Extrusora (key=53), typ: test arc, weight: 1
+     from Esteira|Fomas|ON (key=2) to Parando|Esteira|Formas (key=49), typ: normal, weight: 1
+     from Sensor|Presença|Forma Vazia (key=6) to Parando|Esteira|Formas (key=49), typ: test arc, weight: 1
+     from Desligar|Esteira (key=52) to Esteira|Fomas|OFF (key=23), typ: normal, weight: 1
+     from Botão|Desliga (key=16) to Desligar|Esteira (key=52), typ: test arc, weight: 1
+     from Stop Blade|Abaixada (key=19) to Tempo|Avanço|Curto (key=54), typ: test arc, weight: 1
+     from Empurrar|Forma (key=57) to Atuador|Traseiro|Avançando|Curto (key=27), typ: normal, weight: 1
+     from Atuador|Traseiro|Avançando|Curto (key=27) to Tempo|Avanço|Curto (key=54), typ: normal, weight: 1
+     from Elevando|Stop|Blade (key=56) to Stop|Blade|Elevada (key=18), typ: normal, weight: 1
+     from Elevando|Stop|Blade (key=56) to Atuador|Traseiro|Avançando|Longo (key=30), typ: normal, weight: 1
+     from Sensor|Palete (key=36) to Tempo|Avanço|Longo (key=61), typ: test arc, weight: 1
+     from Quantidade|Pilhas (key=29) to Tempo|Avanço|Longo (key=61), typ: normal, weight: 4
+     from Atuador|Traseiro|Recuando|Longo (key=31) to Ligando Esteira|de Paletes (key=68), typ: test arc, weight: 1
+     from TIMER:|Enchendo|Forma Vazia (key=67) to Queijo|Em Formas|Na Posição (key=26), typ: normal, weight: 1
+     from Sensor|Forma Com|Queijo (key=28) to Empurrar|Forma (key=57), typ: test arc, weight: 1
+     from Atuador|Traseiro|Recuado (key=11) to Empurrar|Forma (key=57), typ: test arc, weight: 1
+     from Atuador|Traseiro|Recuando (key=10) to Tempo|Recuo|Curto (key=55), typ: normal, weight: 1
+     from Atuador|Traseiro|Recuando|Longo (key=31) to Abaixando|Stop|Blade (key=63), typ: inhibitor, weight: 1
+     from Atuador|Traseiro|Recuado (key=11) to Abaixando|Stop|Blade (key=63), typ: test arc, weight: 1
+     from Quantidade|Pilhas (key=29) to Elevando|Stop|Blade (key=56), typ: test arc, weight: 4
+     from Stop|Blade|Elevada (key=18) to Tempo|Avanço|Longo (key=61), typ: test arc, weight: 1
+ 

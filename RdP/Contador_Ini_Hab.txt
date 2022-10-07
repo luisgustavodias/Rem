@@ -1,0 +1,34 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: P1_Inicio, typ: discrete, variable name: m1, initial marking: 0, capacity: -1, key: 0
+     Name: P2_Buff, typ: discrete, variable name: m2, initial marking: 0, capacity: -1, key: 1
+     Name: P3_Cont, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: P4_Fim, typ: discrete, variable name: m4, initial marking: 0, capacity: -1, key: 3
+ 
+Transitions
+     name: T2_Trans, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 4
+     name: T3_Trans, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 5
+     name: T4_Trans, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 6
+     name: T1_Trav, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 7
+ 
+Arcs
+     from T2_Trans (key=4) to P2_Buff (key=1), typ: normal, weight: 1
+     from P1_Inicio (key=0) to T2_Trans (key=4), typ: normal, weight: 1
+     from P2_Buff (key=1) to T3_Trans (key=5), typ: normal, weight: 1
+     from T4_Trans (key=6) to P4_Fim (key=3), typ: normal, weight: 1
+     from T1_Trav (key=7) to P1_Inicio (key=0), typ: normal, weight: 1
+     from P4_Fim (key=3) to T1_Trav (key=7), typ: inhibitor, weight: 1
+     from P3_Cont (key=2) to T4_Trans (key=6), typ: test arc, weight: 2
+     from T3_Trans (key=5) to P3_Cont (key=2), typ: normal, weight: 1
+     from P1_Inicio (key=0) to T1_Trav (key=7), typ: inhibitor, weight: 1
+     from P4_Fim (key=3) to T4_Trans (key=6), typ: inhibitor, weight: 1
+     from P2_Buff (key=1) to T1_Trav (key=7), typ: inhibitor, weight: 1
+ 

@@ -1,0 +1,47 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: P1, typ: discrete, variable name: m1, initial marking: 2, capacity: -1, key: 0
+     Name: P3, typ: discrete, variable name: m2, initial marking: 1, capacity: -1, key: 1
+     Name: P2, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+     Name: P4, typ: discrete, variable name: m4, initial marking: 1, capacity: -1, key: 3
+     Name: P5, typ: discrete, variable name: m5, initial marking: 0, capacity: -1, key: 4
+     Name: P6, typ: discrete, variable name: m6, initial marking: 0, capacity: -1, key: 5
+     Name: P7, typ: discrete, variable name: m7, initial marking: 0, capacity: -1, key: 6
+ 
+Transitions
+     name: T1, typ: discrete, firing time: 0.1, priority: 1, reservation: 0, key: 7
+     name: T4, typ: discrete, firing time: 0.25, priority: 1, reservation: 0, key: 8
+     name: T5, typ: discrete, firing time: 0.3, priority: 1, reservation: 0, key: 9
+     name: T2, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 10
+     name: T3, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 11
+     name: T6, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 12
+     name: T7, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 13
+ 
+Arcs
+     from P1 (key=0) to T1 (key=7), typ: normal, weight: 1
+     from T1 (key=7) to P2 (key=2), typ: normal, weight: 1
+     from P2 (key=2) to T2 (key=10), typ: normal, weight: 1
+     from P2 (key=2) to T3 (key=11), typ: normal, weight: 1
+     from P4 (key=3) to T3 (key=11), typ: normal, weight: 1
+     from T2 (key=10) to P5 (key=4), typ: normal, weight: 1
+     from T3 (key=11) to P6 (key=5), typ: normal, weight: 1
+     from P5 (key=4) to T4 (key=8), typ: normal, weight: 1
+     from P6 (key=5) to T5 (key=9), typ: normal, weight: 1
+     from T4 (key=8) to P7 (key=6), typ: normal, weight: 1
+     from T5 (key=9) to P7 (key=6), typ: normal, weight: 1
+     from P7 (key=6) to T6 (key=12), typ: normal, weight: 1
+     from P7 (key=6) to T7 (key=13), typ: normal, weight: 1
+     from T6 (key=12) to P3 (key=1), typ: normal, weight: 1
+     from T7 (key=13) to P4 (key=3), typ: normal, weight: 1
+     from T5 (key=9) to P1 (key=0), typ: normal, weight: 1
+     from T4 (key=8) to P1 (key=0), typ: normal, weight: 1
+     from P3 (key=1) to T2 (key=10), typ: normal, weight: 1
+ 
