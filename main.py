@@ -15,6 +15,7 @@ from pymongo import MongoClient
 def increase():
     value = int(lbl_value["text"])
     lbl_value["text"] = f"{value + 1}"
+    print("Outra mudança significativa para o código")
 
 
 def decrease():
