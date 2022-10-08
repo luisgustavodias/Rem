@@ -9,6 +9,7 @@ import random
 import string
 import datetime
 import json
+from pymongo import MongoClient()
 
 
 def increase():
@@ -46,21 +47,14 @@ class JanelaPrincipal(tk.Frame):
             self.saveButton = tk.Button(self, text="Salvar", command=order)
             self.saveButton.grid(row=1, column=0, padx=5)
 
-    def Salvar(self):
-        arq = "teste.txt"
-        dados = open('./Log/' + arq, 'r', encoding='latin-1')
+def Salvar(self):
+    arq = "teste.txt"
+    dados = open('./Log/' + arq, 'r', encoding='latin-1')
 
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print('Iniciando REM - Redes de Petri Estocásticas Markovianas')
-
-    app = JanelaPrincipal()
-    app.master.title('Iniciando REM - Redes de Petri Estocásticas Markovianas')
-    app.bind("<Key>", app.buttonSave())
-    app.mainloop()
-
+def criar_log_Json():
+    """
+    Esta funcao cria um arquivo Json teste para a rede Petri
+    """
     # proteção para inserção múltipla
     inseridos = False
 
@@ -123,14 +117,24 @@ if __name__ == '__main__':
     for m in medidas[:10]:
         print('   ', m)
     with open('medidas.json', 'w') as file:
-      json.dump(medidas, file, indent=3, sort_keys=True, default=str)
+        json.dump(medidas, file, indent=3, sort_keys=True, default=str)
 
     with open('medidas.json', 'r') as file:
-      for _ in range(20):
-        print(file.readline(),end='')
+        for _ in range(20):
+            print(file.readline(), end='')
 
 
-        # janela_principal = tk.Tk()
+
+if __name__ == '__main__':
+    print('Iniciando REM - Redes de Petri Estocásticas Markovianas')
+
+    app = JanelaPrincipal()
+    app.master.title('Iniciando REM - Redes de Petri Estocásticas Markovianas')
+    # app.bind("<Key>", app.buttonSave())
+    criar_log_Json()
+    app.mainloop()
+
+    # janela_principal = tk.Tk()
     #
     # janela_principal.title("REM - Redes de Petri Estocásticas Markovianas")
     # janela_principal.rowconfigure(0, minsize=800, weight=1)
