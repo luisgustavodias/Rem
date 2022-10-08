@@ -9,7 +9,7 @@ import random
 import string
 import datetime
 import json
-from pymongo import MongoClient()
+from pymongo import MongoClient
 
 
 def increase():
