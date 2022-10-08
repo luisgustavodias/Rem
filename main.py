@@ -133,6 +133,7 @@ if __name__ == '__main__':
     app.master.title('Iniciando REM - Redes de Petri Estocásticas Markovianas')
     print("Mudança pra teste de commit")
     # app.bind("<Key>", app.buttonSave())
+    print("Alteração no Github")
     criar_log_Json()
     app.mainloop()
 
