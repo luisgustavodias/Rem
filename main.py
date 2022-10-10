@@ -36,6 +36,7 @@ class Transitions:
     priority = 1
     key = 0
 
+
     def __init__(self, nam, tip, time, prior, ke):
         self.time_firing = time
         self.name = nam
@@ -89,78 +90,6 @@ class Arcs:
         self.weight = wei
         self.tipo = tip
 
-
-def criar_log_Json():
-    """
-    Esta funcao cria um arquivo Json teste para a rede Petri
-    """
-    # proteção para inserção múltipla
-    inseridos = False
-
-    # semente para os geradores aleatórios
-    random.seed(int(input('Forneça sua matrícula: ')))
-
-    # lista de letras maiusculas e números
-    letras = string.ascii_uppercase + string.digits
-
-    # gerando dispositivos e sensores  com texto aleatório
-    dispositivos = []
-    for _ in range(random.randint(2, 4)):
-        # nome do dispositivo aleatório
-        nome_dispositivo = ''.join(random.choice(letras) for i in range(7))
-        # sensores do dispositivo
-        sensores = []
-        for _ in range(random.randint(4, 10)):
-            # nome do sensor aleatório
-            nome_sensor = ''.join(random.choice(letras) for i in range(5))
-            tipo = random.choice(['booleano', 'float', 'int', 'texto'])
-            sensores.append({'sensor': nome_sensor, 'tipo': tipo})
-        # adiciondo dispositivo
-        dispositivos.append({'dispositivo': nome_dispositivo, 'sensores': sensores})
-    print(f'Dispositivos ({len(dispositivos)}):')
-    for d in dispositivos:
-        print('   ', d)
-
-    # gerando instantes de medição
-    instantes = []
-    inicio = datetime.datetime(2022, random.randint(1, 5), random.randint(1, 28))
-    for i in range(random.randint(30000, 40000)):
-        inicio += datetime.timedelta(seconds=1)
-        instantes.append(inicio)
-
-    # gerando medidas
-    medidas = []
-    for instante in instantes:
-        for dispositivo in dispositivos:
-            # gerando valores nos sensores
-            valores = []
-            for sensor in dispositivo['sensores']:
-                if sensor['tipo'] == 'booleano':
-                    valores.append(random.choice([False, True]))
-                elif sensor['tipo'] == 'float':
-                    valores.append(round(random.random() * 200.0 - 100.0, 2))
-                elif sensor['tipo'] == 'int':
-                    valores.append(random.randint(-100, 100))
-                elif sensor['tipo'] == 'texto':
-                    valores.append(''.join(random.choice(letras) for i in range(3)))
-            # inserindo medidas
-            medida = {
-                'dispositivo': dispositivo['dispositivo'],
-                'instante': instante,
-            }
-            for s, v in zip(dispositivo['sensores'], valores):
-                medida[s['sensor']] = v
-            medidas.append(medida)
-    # medições obtidas
-    print(f'Medições ({len(medidas)}):')
-    for m in medidas[:10]:
-        print('   ', m)
-    with open('medidas.json', 'w') as file:
-        json.dump(medidas, file, indent=3, sort_keys=True, default=str)
-
-    with open('medidas.json', 'r') as file:
-        for _ in range(20):
-            print(file.readline(), end='')
 
 
 def loading_data(dados):
@@ -662,17 +591,6 @@ class App:
         print('commad')
 
 if __name__ == '__main__':
-    # iniciando janela do tkinter
-
-    # Abrir Rede Petri
-    # Analisar
-    # Buscar Árvore Alcançabilidade
-    # Calcular vetor de propabilidade
-
-    # Exportar Tex
-
-    # Visualizar pm4py
-
 
     root = tk.Tk()
     myApp = App(root)
