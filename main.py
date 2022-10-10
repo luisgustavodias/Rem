@@ -13,11 +13,12 @@ import json
 import tkinter as tk
 import tkinter.font as tkFont
 from tkinter import filedialog
-# from pymongo import MongoClient
-from pm4py.objects.petri.petrinet import PetriNet, Marking
-from pm4py.objects.petri import utils, reachability_graph
-from pm4py.visualization.transition_system import visualizer
-import pm4py as pm
+# # from pymongo import MongoClient
+# from pm4py.objects.petri.petrinet import PetriNet, Marking
+# from pm4py.objects.petri import utils, reachability_graph
+# from pm4py.visualization.transition_system import visualizer
+# import pm4py as pm
+import prompt_toolkit.widgets
 
 
 class Transitions:
@@ -444,26 +445,6 @@ def marcacao_existe(marcacao_teste, marcacoes_teste_ex):
     return -1
 
 
-def clickSave():
-    """
-    Teste Button to save
-    """
-    arq = "teste.txt"
-    with open('./Log/' + arq, 'a') as file:
-        file.write('\n' + e.get())
-    myLabel = tk.Label(root, text=f"Salvando em {arq} linha: {e.get()}")
-    myLabel.pack()
-
-
-def clickOpen():
-    """
-    Abrir RedePetri
-    """
-    root.filename = filedialog.askopenfile(initialdir="./RdP", title="Select file",
-                                           filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
-    analisar(root.filename)
-
-
 def analisar(data):
     # Junto ao programa deverá existir uma pasta com o arquivo exportado do VON
     global place_teste, transition_teste, arc_teste
@@ -497,54 +478,51 @@ def analisar(data):
     # post_saida recebe os valores negativos por isso a soma abaixo
     incidencia = pre_entrada + post_saida
 
-    if (1 == 1):  # input("Buscar Arvore de Alcançabilidade? (S/N): ") == "S":
+def gerar_matriz_alcancabilidade():
 
-        N = input('Digite o máximo de iterações a serem executadas: ')
-        marcacoes = marcacao_inicial.copy()
-        try:
-            N = int(N)
-        except:
-            N = 10
-        print(f'Realizando {N} repetições.')
-        marcacoes, disparos = teste_marcacao(marcacao_inicial, N)
+    N = 100
+    global marcacoes, disparos
+    marcacoes = marcacao_inicial.copy()
+    try:
+        N = int(N)
+    except:
+        N = 10
+    print(f'Realizando {N} repetições.')
+    marcacoes, disparos = teste_marcacao(marcacao_inicial, N)
+    matriz_q = [[0] * len(disparos)] * len(disparos)
+    print(f'Tamanho disparos: {len(disparos)}')
+    matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
+    for i in range(len(disparos)):
+        for j in range(len(disparos.iloc[0, :])):
+            if disparos.iloc[i, j] != -2:
+                matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
+                print(f'disparo{i}x{disparos.iloc[i, j]} = {transition_teste[j].time_firing}')
+        matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
+    print('Matriz Q:')
+    print(matriz_q)
+    # resolvendo ax=b para x, pi*Q=*01'
+    vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
+                               np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
+    for v_pi in vetor_pi:
+        print(v_pi)
 
-        # marcacoes.to_csv(r'.\my_data.csv', index=False)
-        if input("Exportar em tex? (S/N): ") == "S":
-            imprimindo_latex(marcacoes, 'marcacoes')
-            imprimindo_latex(post_saida, "saída")
-            imprimindo_latex(pre_entrada, "entrada")
-            imprimindo_latex(in_inibidores, "inibidores")
-            imprimindo_latex(en_habilitadores, "habilitadores")
-            imprimindo_latex(marcacao_inicial, "marcacao inicial")
-            imprimindo_latex(disparos, "marcacoes disparadas")
-
-        if input("Buscar Arvore de Alcançabilidade? (S/N): ") == "S":
-            matriz_q = [[0] * len(disparos)] * len(disparos)
-            print(f'Tamanho disparos: {len(disparos)}')
-            matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
-            for i in range(len(disparos)):
-                for j in range(len(disparos.iloc[0, :])):
-                    if disparos.iloc[i, j] != -2:
-                        matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
-                        print(f'disparo{i}x{disparos.iloc[i, j]} = {transition_teste[j].time_firing}')
-                matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
-            print('Matriz Q:')
-            print(matriz_q)
-            # resolvendo ax=b para x, pi*Q=*01'
-            vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
-                                       np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
-            if input("Imprimir vetor de propabilidade dos estados? (S/N): ") == "S":
-                for v_pi in vetor_pi:
-                    print(v_pi)
-
-    if (1 == 1):  # input("Converter arquivos para PM4PY? (S/N): ") == "S"):
+    if (1 == 0):  # input("Converter arquivos para PM4PY? (S/N): ") == "S"):
         rdp_teste, rdp_marcacao_inicial = creating_petri_net(transition_teste, place_teste, arc_teste)
         print(rdp_teste)
         print(rdp_marcacao_inicial)
         rdp_marcacao_final = pm.objects.petri_net.utils.final_marking.discover_final_marking(rdp_teste)
         print(rdp_marcacao_final)
 
-    print('Iniciando REM - Redes de Petri Estocásticas Markovianas')
+def imprimir_tex():
+    # marcacoes.to_csv(r'.\my_data.csv', index=False)
+    imprimindo_latex(marcacoes, 'marcacoes')
+    imprimindo_latex(post_saida, "saída")
+    imprimindo_latex(pre_entrada, "entrada")
+    imprimindo_latex(in_inibidores, "inibidores")
+    imprimindo_latex(en_habilitadores, "habilitadores")
+    imprimindo_latex(marcacao_inicial, "marcacao inicial")
+    imprimindo_latex(disparos, "marcacoes disparadas")
+
 
 
 def openRdP():
@@ -556,7 +534,8 @@ def openRdP():
 class App:
     def __init__(self, root):
         #setting title
-        root.title("undefined")
+        entrada_texto_var = tk.StringVar()
+        root.title("REM - Probabilidade em RdP Estocásticas Markovianas")
         #setting window size
         width=650
         height=500
@@ -566,66 +545,121 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
 
-        GButton_172=tk.Button(root)
-        GButton_172["bg"] = "#f0f0f0"
+        ButtonAbrir=tk.Button(root)
+        ButtonAbrir["bg"] = "#f0f0f0"
         ft = tkFont.Font(family='Times',size=10)
-        GButton_172["font"] = ft
-        GButton_172["fg"] = "#000000"
-        GButton_172["justify"] = "center"
-        GButton_172["text"] = "Abrir"
-        GButton_172.place(x=40,y=40,width=87,height=30)
-        GButton_172["command"] = self.GButton_172_command
+        ButtonAbrir["font"] = ft
+        ButtonAbrir["fg"] = "#000000"
+        ButtonAbrir["justify"] = "center"
+        ButtonAbrir["text"] = "Abrir"
+        ButtonAbrir.place(x=10,y=10,width=106,height=42)
+        ButtonAbrir["command"] = (lambda: self.clickOpen(ButtonExpMatrTex, ButtonGerArvAlc, ButtonGerModJson, ButtonSobrando, SaidaTextoPrompt))
 
-        GLineEdit_84=tk.Entry(root)
-        GLineEdit_84["borderwidth"] = "1px"
+        EntradaTexto=tk.Entry(root)
+        EntradaTexto["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_84["font"] = ft
-        GLineEdit_84["fg"] = "#333333"
-        GLineEdit_84["justify"] = "center"
-        GLineEdit_84["text"] = "Entry"
-        GLineEdit_84.place(x=490,y=130,width=44,height=30)
+        EntradaTexto["font"] = ft
+        EntradaTexto["textvariable"] = entrada_texto_var
+        EntradaTexto["fg"] = "#333333"
+        EntradaTexto["justify"] = "center"
+        EntradaTexto["text"] = "Entrada"
+        EntradaTexto.place(x=30,y=280,width=80,height=30)
 
-        GMessage_996=tk.Message(root)
-        GMessage_996["anchor"] = "se"
-        GMessage_996["bg"] = "#bfbfbf"
+        SaidaTextoPrompt=tk.Message(root)
+        SaidaTextoPrompt["bg"] = "#e3e3e3"
         ft = tkFont.Font(family='Times',size=10)
-        GMessage_996["font"] = ft
-        GMessage_996["fg"] = "#000000"
-        GMessage_996["justify"] = "left"
-        GMessage_996["text"] = "Teste"
-        GMessage_996["relief"] = "flat"
-        GMessage_996.place(x=0,y=390,width=649,height=104)
+        SaidaTextoPrompt["font"] = ft
+        SaidaTextoPrompt["fg"] = "#333333"
+        SaidaTextoPrompt["justify"] = "left"
+        SaidaTextoPrompt["text"] = ""
+        SaidaTextoPrompt["relief"] = "flat"
+        SaidaTextoPrompt.place(x=10,y=330,width=625,height=157)
 
-        GRadio_788=tk.Radiobutton(root)
+        ButtonExpMatrTex=tk.Button(root)
+        ButtonExpMatrTex["bg"] = "#f0f0f0"
         ft = tkFont.Font(family='Times',size=10)
-        GRadio_788["font"] = ft
-        GRadio_788["fg"] = "#333333"
-        GRadio_788["justify"] = "center"
-        GRadio_788["text"] = "RadioButton"
-        GRadio_788.place(x=430,y=60,width=85,height=25)
-        GRadio_788["command"] = self.GRadio_788_command
+        ButtonExpMatrTex["font"] = ft
+        ButtonExpMatrTex["fg"] = "#000000"
+        ButtonExpMatrTex["justify"] = "center"
+        ButtonExpMatrTex["text"] = "Exportar Matrizes \nem Tex"
+        ButtonExpMatrTex.place(x=30,y=60,width=107,height=42)
+        ButtonExpMatrTex["command"] = imprimir_tex
+        ButtonExpMatrTex["state"] = 'disabled'
 
-        GButton_731=tk.Button(root)
-        GButton_731["bg"] = "#f0f0f0"
+        ButtonGerArvAlc=tk.Button(root)
+        ButtonGerArvAlc["bg"] = "#f0f0f0"
         ft = tkFont.Font(family='Times',size=10)
-        GButton_731["font"] = ft
-        GButton_731["fg"] = "#000000"
-        GButton_731["justify"] = "center"
-        GButton_731["text"] = "Exportar Tex"
-        GButton_731.place(x=40,y=90,width=90,height=30)
-        GButton_731["command"] = self.GButton_731_command
+        ButtonGerArvAlc["font"] = ft
+        ButtonGerArvAlc["fg"] = "#000000"
+        ButtonGerArvAlc["justify"] = "center"
+        ButtonGerArvAlc["text"] = "Gerar Árvore \nde Alcançabilidade"
+        ButtonGerArvAlc.place(x=30,y=110,width=106,height=43)
+        ButtonGerArvAlc["command"] = gerar_matriz_alcancabilidade
+        ButtonGerArvAlc["state"] = 'disabled'
 
-    def GButton_172_command(self):
+        ButtonGerModJson=tk.Button(root)
+        ButtonGerModJson["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        ButtonGerModJson["font"] = ft
+        ButtonGerModJson["fg"] = "#000000"
+        ButtonGerModJson["justify"] = "center"
+        ButtonGerModJson["text"] = "Gerar Modelo \nem Json"
+        ButtonGerModJson.place(x=30,y=160,width=107,height=41)
+        ButtonGerModJson["command"] = self.ButtonGerModJson_command
+        ButtonGerModJson["state"] = 'disabled'
+
+        SaidaTextoLabel=tk.Label(root)
+        SaidaTextoLabel["bg"] = "#ffffff"
+        ft = tkFont.Font(family='Times',size=10)
+        SaidaTextoLabel["font"] = ft
+        SaidaTextoLabel["fg"] = "#333333"
+        SaidaTextoLabel["justify"] = "left"
+        SaidaTextoLabel["text"] = "label"
+        SaidaTextoLabel.place(x=160,y=10,width=474,height=303)
+
+        ButtonSobrando=tk.Button(root)
+        ButtonSobrando["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        ButtonSobrando["font"] = ft
+        ButtonSobrando["fg"] = "#000000"
+        ButtonSobrando["justify"] = "center"
+        ButtonSobrando["text"] = "Sobrando"
+        ButtonSobrando.place(x=30,y=210,width=109,height=41)
+        ButtonSobrando["command"] = (lambda: self.clickSave(EntradaTexto, SaidaTextoLabel))
+
+        ButtonOk=tk.Button(root)
+        ButtonOk["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        ButtonOk["font"] = ft
+        ButtonOk["fg"] = "#000000"
+        ButtonOk["justify"] = "center"
+        ButtonOk["text"] = "Ok"
+        ButtonOk.place(x=120,y=280,width=30,height=30)
+        ButtonOk["command"] = self.ButtonOk_command
+
+    def clickSave(self, text_ent, text_sai):
+        """
+        Teste Button to save
+        """
+        text_sai.config(text=text_sai['text']+"\n"+text_ent.get())
+
+    def clickOpen(self, buttonE, buttonG, buttonJ, buttonS, textoPrompt):
+        """
+        Abrir RedePetri
+        """
+        self.filename = filedialog.askopenfile(initialdir="./RdP", title="Select file",
+                                               filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
+        textoPrompt.config(text=f"Abrindo: {self.filename.name}", justify="left")
+        analisar(self.filename)
+        textoPrompt.config(text=textoPrompt["text"]+"\nFechando..", justify="left")
+        buttonE.config(state="normal")
+        buttonG.config(state="normal")
+
+    def ButtonOk_command(self):
         print("command")
 
-
-    def GRadio_788_command(self):
-        print("command")
-
-
-    def GButton_731_command(self):
-        print("command")
-
+    def ButtonGerModJson_command(self):
+        print('commad')
 
 if __name__ == '__main__':
     # iniciando janela do tkinter
@@ -642,32 +676,5 @@ if __name__ == '__main__':
 
     root = tk.Tk()
     myApp = App(root)
-
-    # root.geometry('250x200')
-    # testeTexto = tk.Text(root, padx=30,pady=10, name='texto01')
-    #
-    # # app.master.title('Iniciando REM - Redes de Petri Estocásticas Markovianas')
-    #
-    # saveButton = tk.Button(root, text="Salvar", command=clickSave)
-    # openButton = tk.Button(root, text="Abrir", command=clickOpen)
-    #
-    # saveButton.grid(column=0, row=0)
-    # openButton.grid(column=1, row=0)
-    # testeTexto.grid(column=3, row=1)
-    #
-    # # criar_log_Json()
     root.mainloop()
-
-    # janela_principal = tk.Tk()
-    #
-    # janela_principal.title("REM - Redes de Petri Estocásticas Markovianas")
-    # janela_principal.rowconfigure(0, minsize=800, weight=1)
-    # janela_principal.columnconfigure(1, minsize=800, weight=1)
-    #
-    # txt_edit = tk.Text(janela_principal)
-    # frm_buttons = tk.Frame(janela_principal, relief=tk.RAISED, bd=2)
-    # btn_open = tk.Button(frm_buttons, text="Open")
-    # btn_save = tk.Button(frm_buttons, text="Save As...")
-    #
-    # # Dimensionando janela
-    # janela_principal.mainloop()
+    # # criar_log_Json()
