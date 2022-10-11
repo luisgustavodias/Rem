@@ -414,10 +414,10 @@ def imprimindo_latex(folha, folha_nome, prompt_saida):
     :param folha:
     :param folha_nome:
     """
-    prompt_saida.insert(prompt_saida.index("end", "end"), f'''
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'''
 Imprimindo {folha_nome}:''')
     for f in folha.values:
-        prompt_saida.insert(prompt_saida.index("end", "end"), str(f))
+        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(f))
     # arq_text = open('tex_matriz.txt', 'a')
     # a = folha.style.to_latex(caption=f"matriz {folha_nome}")
     # arq_text.write(str(a))
@@ -481,7 +481,7 @@ def analisar(data):
 
 def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex):
     buttonExpMatrTex.config(state="normal")
-    prompt_saida.insert(prompt_saida.index("end"), "Gerando matriz de alcançabilidade")
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ "Gerando matriz de alcançabilidade")
     N = prompt_entrada.get()
     global marcacoes, disparos
     marcacoes = marcacao_inicial.copy()
@@ -489,24 +489,24 @@ def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex)
         N = int(N)
     except:
         N = 10
-    prompt_saida.insert(prompt_saida.index("end"), f'Realizando {N} repetições.')
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'Realizando {N} repetições.')
     marcacoes, disparos = teste_marcacao(marcacao_inicial, N, prompt_saida)
     matriz_q = [[0] * len(disparos)] * len(disparos)
-    prompt_saida.insert(prompt_saida.index("end"), f'Tamanho disparos: {len(disparos)}')
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'Tamanho disparos: {len(disparos)}')
     matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
     for i in range(len(disparos)):
         for j in range(len(disparos.iloc[0, :])):
             if disparos.iloc[i, j] != -2:
                 matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
         matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
-    prompt_saida.insert(prompt_saida.index("end"), 'Matriz Q:')
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ 'Matriz Q:')
     for m in matriz_q.values:
-        prompt_saida.insert(prompt_saida.index("end"), str(m))
+        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(m))
     # resolvendo ax=b para x, pi*Q=*01'
     vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
                                np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
     for v_pi in vetor_pi:
-        prompt_saida.insert(prompt_saida.index("end"), str(v_pi))
+        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(v_pi))
 
     if (1 == 0):  # input("Converter arquivos para PM4PY? (S/N): ") == "S"):
         rdp_teste, rdp_marcacao_inicial = creating_petri_net(transition_teste, place_teste, arc_teste)
@@ -518,7 +518,6 @@ def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex)
 
 def imprimir_tex(prompt_saida):
     # marcacoes.to_csv(r'.\my_data.csv', index=False)
-    prompt_saida.config(text="")
     imprimindo_latex(marcacoes, 'marcacoes', prompt_saida)
     imprimindo_latex(post_saida, "saída", prompt_saida)
     imprimindo_latex(pre_entrada, "entrada", prompt_saida)
@@ -542,7 +541,7 @@ class App:
         root.geometry(alignstr)
 
         # Travando o tamanho da janela
-        # root.resizable(width=False, height=False)
+        root.resizable(width=False, height=False)
 
         # Definindo botoes e seus atributos
         buttonAbrir = tk.Button(root)
@@ -650,7 +649,7 @@ class App:
         """
         Exibir na label da direita
         """
-        text_sai.insert(text_sai.index("end", "end"), "\n"+text)
+        text_sai.insert(text_sai.index("end+1c linestart"), "\n"+text)
 
     def clickOpen(self, buttonG, textoPrompt):
         """
