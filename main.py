@@ -301,7 +301,7 @@ def creating_petri_net(petri_transition, petri_place, petri_arc):
     return net, init_mark
 
 
-def teste_marcacao(marcacao, N):
+def teste_marcacao(marcacao, N, prompt_saida):
     marcacoes_disparadas = pd.DataFrame([[-1] * len(transition_teste)], columns=nome_transitions)
     # print('As marcacoes disparadas ate agora sao:')
     # print(marcacoes_disparadas)
@@ -312,7 +312,6 @@ def teste_marcacao(marcacao, N):
         # obter uma matriz comparando a marcacao com cada uma das transicoes da matriz de entrada
         # aqui tambem deve entrar a verificacao de inibidores e habilitadores (fazer depois)
         # print("Teste da marcação:")
-        print(marcacao.dtypes)
         # print('Teste da Entrada')
         teste = in_inibidores.gt(marcacao.values)
         teste += in_inibidores.eq(marcacao.iloc[0, :] * 0)
@@ -340,7 +339,8 @@ def teste_marcacao(marcacao, N):
                         # print('Novas marcacoes:')
                         # print(marcacoes_teste)
                         marcacoes_disparadas = pd.concat(
-                            [marcacoes_disparadas, pd.DataFrame([[-1] * len(transition_teste)], columns=nome_transitions)],
+                            [marcacoes_disparadas,
+                             pd.DataFrame([[-1] * len(transition_teste)], columns=nome_transitions)],
                             ignore_index=True)
                         marcacoes_disparadas.loc[m, transition_teste[i].name] = len(marcacoes_disparadas) - 1
                     else:
@@ -408,16 +408,17 @@ def teste_marcacao(marcacao, N):
     return marcacoes_teste, marcacoes_disparadas
 
 
-def imprimindo_latex(folha, folha_nome):
+def imprimindo_latex(folha, folha_nome, prompt_saida):
     """
     Esta função recebe uma matriz ou vetor para ser impresso, esta função não retorna nada, apenas imprime no terminal
     ou então cria um arquivo para salvar as informações.
     :param folha:
     :param folha_nome:
     """
-    print(f'''
+    myApp.ImprimirLabel(prompt_saida,f'''
 Imprimindo {folha_nome}:''')
-    print(folha)
+    for f in folha.values:
+        myApp.ImprimirLabel(prompt_saida,str(f))
     # arq_text = open('tex_matriz.txt', 'a')
     # a = folha.style.to_latex(caption=f"matriz {folha_nome}")
     # arq_text.write(str(a))
@@ -478,33 +479,37 @@ def analisar(data):
     # post_saida recebe os valores negativos por isso a soma abaixo
     incidencia = pre_entrada + post_saida
 
-def gerar_matriz_alcancabilidade():
 
-    N = 100
+def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex):
+    buttonExpMatrTex.config(state="normal")
+    prompt_saida.config(text="")
+    myApp.ImprimirLabel(prompt_saida, "Gerando matriz de alcançabilidade")
+    N = prompt_entrada.get()
+
     global marcacoes, disparos
     marcacoes = marcacao_inicial.copy()
     try:
         N = int(N)
     except:
         N = 10
-    print(f'Realizando {N} repetições.')
-    marcacoes, disparos = teste_marcacao(marcacao_inicial, N)
+    myApp.ImprimirLabel(prompt_saida,f'Realizando {N} repetições.')
+    marcacoes, disparos = teste_marcacao(marcacao_inicial, N, prompt_saida)
     matriz_q = [[0] * len(disparos)] * len(disparos)
-    print(f'Tamanho disparos: {len(disparos)}')
+    myApp.ImprimirLabel(prompt_saida,f'Tamanho disparos: {len(disparos)}')
     matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
     for i in range(len(disparos)):
         for j in range(len(disparos.iloc[0, :])):
             if disparos.iloc[i, j] != -2:
                 matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
-                print(f'disparo{i}x{disparos.iloc[i, j]} = {transition_teste[j].time_firing}')
         matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
-    print('Matriz Q:')
-    print(matriz_q)
+    myApp.ImprimirLabel(prompt_saida,'Matriz Q:')
+    for m in matriz_q.values:
+        myApp.ImprimirLabel(prompt_saida,str(m))
     # resolvendo ax=b para x, pi*Q=*01'
     vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
                                np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
     for v_pi in vetor_pi:
-        print(v_pi)
+        myApp.ImprimirLabel(prompt_saida,str(v_pi))
 
     if (1 == 0):  # input("Converter arquivos para PM4PY? (S/N): ") == "S"):
         rdp_teste, rdp_marcacao_inicial = creating_petri_net(transition_teste, place_teste, arc_teste)
@@ -513,137 +518,139 @@ def gerar_matriz_alcancabilidade():
         rdp_marcacao_final = pm.objects.petri_net.utils.final_marking.discover_final_marking(rdp_teste)
         print(rdp_marcacao_final)
 
-def imprimir_tex():
+
+def imprimir_tex(prompt_saida):
     # marcacoes.to_csv(r'.\my_data.csv', index=False)
-    imprimindo_latex(marcacoes, 'marcacoes')
-    imprimindo_latex(post_saida, "saída")
-    imprimindo_latex(pre_entrada, "entrada")
-    imprimindo_latex(in_inibidores, "inibidores")
-    imprimindo_latex(en_habilitadores, "habilitadores")
-    imprimindo_latex(marcacao_inicial, "marcacao inicial")
-    imprimindo_latex(disparos, "marcacoes disparadas")
-
-
-
-def openRdP():
-    global arq
-    arq = root.filename
-    analisar()
+    prompt_saida.config(text="")
+    imprimindo_latex(marcacoes, 'marcacoes', prompt_saida)
+    imprimindo_latex(post_saida, "saída", prompt_saida)
+    imprimindo_latex(pre_entrada, "entrada", prompt_saida)
+    imprimindo_latex(in_inibidores, "inibidores", prompt_saida)
+    imprimindo_latex(en_habilitadores, "habilitadores", prompt_saida)
+    imprimindo_latex(marcacao_inicial, "marcacao inicial", prompt_saida)
+    imprimindo_latex(disparos, "marcacoes disparadas", prompt_saida)
 
 
 class App:
     def __init__(self, root):
-        #setting title
         entrada_texto_var = tk.StringVar()
+        # Definindo titulo
         root.title("REM - Probabilidade em RdP Estocásticas Markovianas")
-        #setting window size
-        width=650
-        height=500
+        # Definindo tamanho da janela
+        width = 650
+        height = 500
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         root.geometry(alignstr)
+
+        # Travando o tamanho da janela
         root.resizable(width=False, height=False)
 
-        ButtonAbrir=tk.Button(root)
-        ButtonAbrir["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonAbrir["font"] = ft
-        ButtonAbrir["fg"] = "#000000"
-        ButtonAbrir["justify"] = "center"
-        ButtonAbrir["text"] = "Abrir"
-        ButtonAbrir.place(x=10,y=10,width=106,height=42)
-        ButtonAbrir["command"] = (lambda: self.clickOpen(ButtonExpMatrTex, ButtonGerArvAlc, ButtonGerModJson, ButtonSobrando, SaidaTextoPrompt))
+        # Definindo botoes e seus atributos
+        buttonAbrir = tk.Button(root)
+        buttonAbrir["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonAbrir["font"] = ft
+        buttonAbrir["fg"] = "#000000"
+        buttonAbrir["justify"] = "center"
+        buttonAbrir["text"] = "Abrir"
+        buttonAbrir.place(x=10, y=320, width=106, height=42)
+        buttonAbrir["command"] = (lambda: self.clickOpen(buttonGerArvAlc, saidaTextoPrompt))
 
-        EntradaTexto=tk.Entry(root)
-        EntradaTexto["borderwidth"] = "1px"
-        ft = tkFont.Font(family='Times',size=10)
-        EntradaTexto["font"] = ft
-        EntradaTexto["textvariable"] = entrada_texto_var
-        EntradaTexto["fg"] = "#333333"
-        EntradaTexto["justify"] = "center"
-        EntradaTexto["text"] = "Entrada"
-        EntradaTexto.place(x=30,y=280,width=80,height=30)
+        buttonExpMatrTex = tk.Button(root)
+        buttonExpMatrTex["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonExpMatrTex["font"] = ft
+        buttonExpMatrTex["fg"] = "#000000"
+        buttonExpMatrTex["justify"] = "center"
+        buttonExpMatrTex["text"] = "Exportar Matrizes \nem Tex"
+        buttonExpMatrTex.place(x=10, y=370, width=107, height=42)
+        buttonExpMatrTex["command"] = lambda: imprimir_tex(saidaTextoLabel)
+        buttonExpMatrTex["state"] = 'disabled'
 
-        SaidaTextoPrompt=tk.Message(root)
-        SaidaTextoPrompt["bg"] = "#e3e3e3"
-        ft = tkFont.Font(family='Times',size=10)
-        SaidaTextoPrompt["font"] = ft
-        SaidaTextoPrompt["fg"] = "#333333"
-        SaidaTextoPrompt["justify"] = "left"
-        SaidaTextoPrompt["text"] = ""
-        SaidaTextoPrompt["relief"] = "flat"
-        SaidaTextoPrompt.place(x=10,y=330,width=625,height=157)
+        buttonGerArvAlc = tk.Button(root)
+        buttonGerArvAlc["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonGerArvAlc["font"] = ft
+        buttonGerArvAlc["fg"] = "#000000"
+        buttonGerArvAlc["justify"] = "center"
+        buttonGerArvAlc["text"] = "Gerar Árvore \nde Alcançabilidade"
+        buttonGerArvAlc.place(x=10, y=420, width=106, height=43)
+        buttonGerArvAlc["command"] = lambda: gerar_matriz_alcancabilidade(saidaTextoLabel, entradaTexto,
+                                                                          buttonExpMatrTex)
+        buttonGerArvAlc["state"] = 'disabled'
 
-        ButtonExpMatrTex=tk.Button(root)
-        ButtonExpMatrTex["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonExpMatrTex["font"] = ft
-        ButtonExpMatrTex["fg"] = "#000000"
-        ButtonExpMatrTex["justify"] = "center"
-        ButtonExpMatrTex["text"] = "Exportar Matrizes \nem Tex"
-        ButtonExpMatrTex.place(x=30,y=60,width=107,height=42)
-        ButtonExpMatrTex["command"] = imprimir_tex
-        ButtonExpMatrTex["state"] = 'disabled'
+        buttonGerModJson = tk.Button(root)
+        buttonGerModJson["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonGerModJson["font"] = ft
+        buttonGerModJson["fg"] = "#000000"
+        buttonGerModJson["justify"] = "center"
+        buttonGerModJson["text"] = "Gerar Modelo \nem Json"
+        buttonGerModJson.place(x=140, y=320, width=107, height=41)
+        buttonGerModJson["command"] = self.buttonGerModJson_command
+        buttonGerModJson["state"] = 'disabled'
 
-        ButtonGerArvAlc=tk.Button(root)
-        ButtonGerArvAlc["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonGerArvAlc["font"] = ft
-        ButtonGerArvAlc["fg"] = "#000000"
-        ButtonGerArvAlc["justify"] = "center"
-        ButtonGerArvAlc["text"] = "Gerar Árvore \nde Alcançabilidade"
-        ButtonGerArvAlc.place(x=30,y=110,width=106,height=43)
-        ButtonGerArvAlc["command"] = gerar_matriz_alcancabilidade
-        ButtonGerArvAlc["state"] = 'disabled'
+        buttonSobrando = tk.Button(root)
+        buttonSobrando["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonSobrando["font"] = ft
+        buttonSobrando["fg"] = "#000000"
+        buttonSobrando["justify"] = "center"
+        buttonSobrando["text"] = "Sobrando"
+        buttonSobrando.place(x=140, y=370, width=109, height=41)
+        buttonSobrando["command"] = (lambda: self.ImprimirLabel(saidaTextoLabel, entradaTexto.get()))
 
-        ButtonGerModJson=tk.Button(root)
-        ButtonGerModJson["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonGerModJson["font"] = ft
-        ButtonGerModJson["fg"] = "#000000"
-        ButtonGerModJson["justify"] = "center"
-        ButtonGerModJson["text"] = "Gerar Modelo \nem Json"
-        ButtonGerModJson.place(x=30,y=160,width=107,height=41)
-        ButtonGerModJson["command"] = self.ButtonGerModJson_command
-        ButtonGerModJson["state"] = 'disabled'
+        buttonOk = tk.Button(root)
+        buttonOk["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonOk["font"] = ft
+        buttonOk["fg"] = "#000000"
+        buttonOk["justify"] = "center"
+        buttonOk["text"] = "Ok"
+        buttonOk.place(x=220, y=420, width=30, height=30)
+        buttonOk["command"] = self.buttonOk_command
 
-        SaidaTextoLabel=tk.Label(root)
-        SaidaTextoLabel["bg"] = "#ffffff"
-        ft = tkFont.Font(family='Times',size=10)
-        SaidaTextoLabel["font"] = ft
-        SaidaTextoLabel["fg"] = "#333333"
-        SaidaTextoLabel["justify"] = "left"
-        SaidaTextoLabel["text"] = "label"
-        SaidaTextoLabel.place(x=160,y=10,width=474,height=303)
+        saidaTextoLabel = tk.Message(root)
+        saidaTextoLabel["bg"] = "#ffffff"
+        ft = tkFont.Font(family='Times', size=10)
+        saidaTextoLabel["anchor"] = "nw"
+        saidaTextoLabel["font"] = ft
+        saidaTextoLabel["fg"] = "#333333"
+        saidaTextoLabel["justify"] = "left"
+        saidaTextoLabel["text"] = ""
+        saidaTextoLabel["width"] = 365
+        saidaTextoLabel.place(x=265, y=10, width=375, height=485)
 
-        ButtonSobrando=tk.Button(root)
-        ButtonSobrando["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonSobrando["font"] = ft
-        ButtonSobrando["fg"] = "#000000"
-        ButtonSobrando["justify"] = "center"
-        ButtonSobrando["text"] = "Sobrando"
-        ButtonSobrando.place(x=30,y=210,width=109,height=41)
-        ButtonSobrando["command"] = (lambda: self.clickSave(EntradaTexto, SaidaTextoLabel))
+        saidaTextoPrompt = tk.Message(root)
+        saidaTextoPrompt["bg"] = "#e3e3e3"
+        ft = tkFont.Font(family='Times', size=10)
+        saidaTextoPrompt["anchor"] = "nw"
+        saidaTextoPrompt["font"] = ft
+        saidaTextoPrompt["fg"] = "#333333"
+        saidaTextoPrompt["justify"] = "left"
+        saidaTextoPrompt["text"] = ""
+        saidaTextoPrompt["width"] = 240
+        saidaTextoPrompt.place(x=10, y=10, width=247, height=300)
 
-        ButtonOk=tk.Button(root)
-        ButtonOk["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times',size=10)
-        ButtonOk["font"] = ft
-        ButtonOk["fg"] = "#000000"
-        ButtonOk["justify"] = "center"
-        ButtonOk["text"] = "Ok"
-        ButtonOk.place(x=120,y=280,width=30,height=30)
-        ButtonOk["command"] = self.ButtonOk_command
+        entradaTexto = tk.Entry(root)
+        entradaTexto["borderwidth"] = "1px"
+        ft = tkFont.Font(family='Times', size=10)
+        entradaTexto["font"] = ft
+        entradaTexto["textvariable"] = entrada_texto_var
+        entradaTexto["fg"] = "#333333"
+        entradaTexto["justify"] = "center"
+        entradaTexto["text"] = "Entrada"
+        entradaTexto.place(x=140, y=420, width=70, height=30)
 
-    def clickSave(self, text_ent, text_sai):
+    def ImprimirLabel(self, text_sai, text):
         """
-        Teste Button to save
+        Exibir na label da direita
         """
-        text_sai.config(text=text_sai['text']+"\n"+text_ent.get())
+        text_sai.config(text=text_sai['text'] + "\n" + text)
 
-    def clickOpen(self, buttonE, buttonG, buttonJ, buttonS, textoPrompt):
+    def clickOpen(self, buttonG, textoPrompt):
         """
         Abrir RedePetri
         """
@@ -651,15 +658,14 @@ class App:
                                                filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
         textoPrompt.config(text=f"Abrindo: {self.filename.name}", justify="left")
         analisar(self.filename)
-        textoPrompt.config(text=textoPrompt["text"]+"\nFechando..", justify="left")
-        buttonE.config(state="normal")
         buttonG.config(state="normal")
 
-    def ButtonOk_command(self):
+    def buttonOk_command(self):
         print("command")
 
-    def ButtonGerModJson_command(self):
+    def buttonGerModJson_command(self):
         print('commad')
+
 
 if __name__ == '__main__':
     # iniciando janela do tkinter
@@ -672,7 +678,6 @@ if __name__ == '__main__':
     # Exportar Tex
 
     # Visualizar pm4py
-
 
     root = tk.Tk()
     myApp = App(root)
