@@ -6,11 +6,11 @@
 # Autor: Luis Gustavo Dias Simão
 # Orientador: Luiz Edival de Souza
 
-
+import json
 import pandas as pd  # para formatar os dados.
 import numpy as np # para realizar os calculos
 import tkinter as tk # para a interface gráfica
-import tkinter.font as tkFont  # para configurar as fontes
+import tkinter.font as tkFont  # para configurar as fontes do TKinter
 from tkinter import filedialog  # para abrir os arquivos
 
 
@@ -112,10 +112,12 @@ def analisar(data):
 
     # Reformatando dados para DataFrame da biblioteca do Pandas
     pre_entrada = pd.DataFrame(pre_entrada_np, index=nome_transitions, columns=nome_places)
+    print(pre_entrada)
     post_saida = pd.DataFrame(post_saida_np, index=nome_transitions, columns=nome_places)
     in_inibidores = pd.DataFrame(in_inibidores_np, index=nome_transitions, columns=nome_places)
     en_habilitadores = pd.DataFrame(en_habilitadores_np, index=nome_transitions, columns=nome_places)
     marcacao_inicial = pd.DataFrame(marcacao_inicial_np, columns=nome_places)
+    print(marcacao_inicial)
 
 
 def loading_data(dados):
@@ -131,9 +133,23 @@ def loading_data(dados):
     place_teste.pop(0)
     transition_teste = [Transitions('', '', '', 1, "")]
     transition_teste.pop(0)
-    fornecedor = "RdP Visual Object Viewer"
-    # Strip the message to obtain the dados
-    if (fornecedor == "RdP Visual Object Viewer"):
+
+    fornecedor = "erro"
+
+    h = dados.read(1)
+
+    if h == "{":
+        fornecedor = "Arruda"
+    elif h == "f":
+        fornecedor = "VON"
+    else:
+        h = "erro"
+
+
+
+    # fatiando em linhas para leitura dos dados no caso dos arquivo gerado em VON
+    if fornecedor == "VON":
+        print("Carregando arquivo do Virtual Object Net++")
         for line in dados:
             line = line.strip('     ')
             line = line.rstrip()
@@ -195,8 +211,31 @@ def loading_data(dados):
                 transition_teste.append(Transitions(name, tipo, time_speed, priority, key))
 
         return place_teste, transition_teste, arc_teste
-    else:
-        print("Fornecedor diferente...")
+    elif (fornecedor == "Arruda"):
+        # Aqui fazer como se carrega-se do VON criado pelo Paulo Arruda ou pelo CPNTools, a ideia é manter o formato com
+        # transições, lugares e arcos definidos por este template para os devidos cálculos, tal como realizado acima,
+        # destrinchando o texto para obter as informações de cada uma das classes
+        print("Carregando arquivo do Arruda")
+
+        with open(dados.name, 'r') as file:
+            conteudo = file.read()
+            data = json.loads(conteudo)
+
+            print(data["name"])
+            for transition in data["transitions"]:
+                transition_teste.append(Transitions(transition["name"], "normal", float(transition["delay"].replace(",", ".")), 1, transition["id"]))
+            for place in data["places"]:
+                place_teste.append(Places(place["name"], "dicrete", place["name"], int(place["initialMark"]), -1, place["id"]))
+            for arc in data["arcs"]:
+                if arc["arcType"] == "Input":
+                    arc_teste.append(Arcs(arc["placeId"], arc["transId"], float(arc["weight"]), "normal"))
+                else:
+                    arc_teste.append(Arcs(arc["transId"], arc["placeId"], float(arc["weight"]), "normal"))
+
+
+        return place_teste, transition_teste, arc_teste
+    elif (fornecedor == "erro"):
+        print("Erro em relacao ao nome do fornecedor...")
         return place_teste, transition_teste, arc_teste
 
 
@@ -219,7 +258,8 @@ def creating_matrix(transition, place, arco_teste):
     ena = [[0.0] * colunas for i in range(linhas)]
     post = [[0.0] * colunas for i in range(linhas)]
 
-    for i in range(colunas): m0[0][i] = place[i].initial_mark
+    for i in range(colunas):
+        m0[0][i] = place[i].initial_mark
     for arcos in arco_teste:
         for i in range(linhas):
             for j in range(colunas):
