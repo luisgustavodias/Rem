@@ -1,24 +1,17 @@
-""" Trabalho Final de Graduação - UNIFEI 05.2023 - 10/10/2022-10:49 - testando tkinter gerado online
-Obtenção do vetor de probabilidades dos estados de uma rede de petri limitada e estocástica
-utilizando cadeias de markov.
-Autor: Luis Gustavo Dias Simão
-Orientador: Luiz Edival de Souza
-"""
-import pandas as pd
-import numpy as np
-import random
-import string
-import datetime
-import json
-import tkinter as tk
-import tkinter.font as tkFont
-from tkinter import filedialog
-# # from pymongo import MongoClient
-from pm4py.objects.petri.petrinet import PetriNet, Marking
-# from pm4py.objects.petri import utils, reachability_graph
-# from pm4py.visualization.transition_system import visualizer
-# import pm4py as pm
-import prompt_toolkit.widgets
+# coding=utf-8
+# Trabalho Final de Graduação - UNIFEI 05.2023 - 10/10/2022-10:49 - testando tkinter gerado online
+#
+# Obtenção do vetor de probabilidades dos estados de uma rede de petri limitada e estocástica
+# utilizando cadeias de markov.
+# Autor: Luis Gustavo Dias Simão
+# Orientador: Luiz Edival de Souza
+
+
+import pandas as pd  # para formatar os dados.
+import numpy as np # para realizar os calculos
+import tkinter as tk # para a interface gráfica
+import tkinter.font as tkFont  # para configurar as fontes
+from tkinter import filedialog  # para abrir os arquivos
 
 
 class Transitions:
@@ -34,7 +27,7 @@ class Transitions:
     tipo = ''
     time_firing = 0.0  # considerando-se apenas tempos
     priority = 1
-    key = 0
+    key = ""
 
     def __init__(self, nam, tip, time, prior, ke):
         self.time_firing = time
@@ -57,9 +50,9 @@ class Places:
     name = ''
     tipo = ''
     variable_name = ''
-    initial_mark = 0.0
+    initial_mark = 0
     capacity = -1.0
-    key = 0
+    key = ""
 
     def __init__(self, nam, tip, var_nam, ini_mark, capac, ke):
         self.name = nam
@@ -78,8 +71,8 @@ class Arcs:
             float weight (peso do arco)
             string tipo (tipo do arco: discreto,continuo)
     """
-    begin_key = 0
-    finish_key = 0
+    begin_key = ""
+    finish_key = ""
     weight = 0.0
     tipo = ""
 
@@ -90,77 +83,39 @@ class Arcs:
         self.tipo = tip
 
 
-def criar_log_Json():
-    """
-    Esta funcao cria um arquivo Json teste para a rede Petri
-    """
-    # proteção para inserção múltipla
-    inseridos = False
+def analisar(data):
+    ###### AQUI EH UM LUGAR QUE PRECISA MELHORAR, INICIANDO OS DADOS COM NUMPY E CONVERTENDO PRA PANDAS?
 
-    # semente para os geradores aleatórios
-    random.seed(int(input('Forneça sua matrícula: ')))
+    # Junto ao programa deverá existir uma pasta com o arquivo exportado do VON
+    global place_teste, transition_teste, arc_teste
+    # loading_data carrega os lugares, transicoes e arcos
+    place_teste, transition_teste, arc_teste = loading_data(data)
+    global nome_transitions, nome_places
+    nome_transitions = [''] * len(transition_teste)
+    nome_places = [''] * len(place_teste)
+    # carregando os nomes dos lugares e transicoes *** importante que nao existam nomes repetidos
+    i = 0
+    for c in place_teste:
+        nome_places[i] = c.name
+        i += 1
+    i = 0
+    for l in transition_teste:
+        nome_transitions[i] = l.name
+        i += 1
 
-    # lista de letras maiusculas e números
-    letras = string.ascii_uppercase + string.digits
+    # CREATING_MATRIX gera as matrizes Pre, Post, In, En, M0
+    # dada determinados conjuntos de [Transition], [Place], [Arc]
+    pre_entrada_np, post_saida_np, in_inibidores_np, en_habilitadores_np, marcacao_inicial_np = creating_matrix(
+        transition_teste, place_teste, arc_teste)
 
-    # gerando dispositivos e sensores  com texto aleatório
-    dispositivos = []
-    for _ in range(random.randint(2, 4)):
-        # nome do dispositivo aleatório
-        nome_dispositivo = ''.join(random.choice(letras) for i in range(7))
-        # sensores do dispositivo
-        sensores = []
-        for _ in range(random.randint(4, 10)):
-            # nome do sensor aleatório
-            nome_sensor = ''.join(random.choice(letras) for i in range(5))
-            tipo = random.choice(['booleano', 'float', 'int', 'texto'])
-            sensores.append({'sensor': nome_sensor, 'tipo': tipo})
-        # adiciondo dispositivo
-        dispositivos.append({'dispositivo': nome_dispositivo, 'sensores': sensores})
-    print(f'Dispositivos ({len(dispositivos)}):')
-    for d in dispositivos:
-        print('   ', d)
+    global pre_entrada, post_saida, in_inibidores, en_habilitadores, marcacao_inicial
 
-    # gerando instantes de medição
-    instantes = []
-    inicio = datetime.datetime(2022, random.randint(1, 5), random.randint(1, 28))
-    for i in range(random.randint(30000, 40000)):
-        inicio += datetime.timedelta(seconds=1)
-        instantes.append(inicio)
-
-    # gerando medidas
-    medidas = []
-    for instante in instantes:
-        for dispositivo in dispositivos:
-            # gerando valores nos sensores
-            valores = []
-            for sensor in dispositivo['sensores']:
-                if sensor['tipo'] == 'booleano':
-                    valores.append(random.choice([False, True]))
-                elif sensor['tipo'] == 'float':
-                    valores.append(round(random.random() * 200.0 - 100.0, 2))
-                elif sensor['tipo'] == 'int':
-                    valores.append(random.randint(-100, 100))
-                elif sensor['tipo'] == 'texto':
-                    valores.append(''.join(random.choice(letras) for i in range(3)))
-            # inserindo medidas
-            medida = {
-                'dispositivo': dispositivo['dispositivo'],
-                'instante': instante,
-            }
-            for s, v in zip(dispositivo['sensores'], valores):
-                medida[s['sensor']] = v
-            medidas.append(medida)
-    # medições obtidas
-    print(f'Medições ({len(medidas)}):')
-    for m in medidas[:10]:
-        print('   ', m)
-    with open('medidas.json', 'w') as file:
-        json.dump(medidas, file, indent=3, sort_keys=True, default=str)
-
-    with open('medidas.json', 'r') as file:
-        for _ in range(20):
-            print(file.readline(), end='')
+    # Reformatando dados para DataFrame da biblioteca do Pandas
+    pre_entrada = pd.DataFrame(pre_entrada_np, index=nome_transitions, columns=nome_places)
+    post_saida = pd.DataFrame(post_saida_np, index=nome_transitions, columns=nome_places)
+    in_inibidores = pd.DataFrame(in_inibidores_np, index=nome_transitions, columns=nome_places)
+    en_habilitadores = pd.DataFrame(en_habilitadores_np, index=nome_transitions, columns=nome_places)
+    marcacao_inicial = pd.DataFrame(marcacao_inicial_np, columns=nome_places)
 
 
 def loading_data(dados):
@@ -172,68 +127,77 @@ def loading_data(dados):
     """
     arc_teste = [Arcs('', '', 0.0, '')]  # creating arc list
     arc_teste.pop(0)
-    place_teste = [Places('', '', '', 0.0, -1, 0)]  # creating place list
+    place_teste = [Places('', '', '', 0, -1, "")]  # creating place list
     place_teste.pop(0)
-    transition_teste = [Transitions('', '', '', 1, 0)]
+    transition_teste = [Transitions('', '', '', 1, "")]
     transition_teste.pop(0)
-
+    fornecedor = "RdP Visual Object Viewer"
     # Strip the message to obtain the dados
-    for line in dados:
-        line = line.strip('     ')
-        line = line.rstrip()
+    if (fornecedor == "RdP Visual Object Viewer"):
+        for line in dados:
+            line = line.strip('     ')
+            line = line.rstrip()
 
-        # Loading...
-        # Arcs
-        if line.startswith('from '):
-            inicio = line[line.find('from ') + len('from '):line.find(' (key')]
-            begin_key = int(line[line.find(inicio) + len(inicio) + len(' (key='):line.find(') t')])
-            final = 7 + line.find(str(begin_key))
-            final = line[final:line.find('), t')]
-            finish_key = int(final[final.find('(key=') + len('(key='):])
-            weight = line[line.find('weight: ') + len('weight: '):]
-            weight = float(weight.replace(',', '.'))
-            tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', weig')]
-            arc_teste.append(Arcs(begin_key, finish_key, weight, tipo))
+            # Loading...
+            # Arcs
+            if line.startswith('from '):
+                inicio = line[line.find('from ') + len('from '):line.find(' (key')]
+                begin_key = str(line[line.find(inicio) + len(inicio) + len(' (key='):line.find(') t')])
+                final = 7 + line.find(str(begin_key))
+                final = line[final:line.find('), t')]
+                finish_key = str(final[final.find('(key=') + len('(key='):])
+                weight = line[line.find('weight: ') + len('weight: '):]
+                weight = float(weight.replace(',', '.'))
+                tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', weig')]
+                arc_teste.append(Arcs(begin_key, finish_key, weight, tipo))
 
-        # Places
-        if line.startswith('Name: '):
-            name = line[6:line.find(', typ')]
-            tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', var')]
-            variable_name = line[(line.find('variable name: ') + len('variable name: ')):line.find(', ini')]
-            try:
-                initial_mark = float(line[(line.find('marking: ') + len('marking: ')):line.find(', capacity: ')])
-            except:
-                initial_mark = float(line[(line.find('marking: ') + len('marking: ')):line.find(', key:')])
-            try:
-                capacity = float(line[line.find('capacity: ') + len('capacity: '):line.find(', key:')])
-            except:
-                capacity = -1
-            key = int(line[line.find('key: ') + len('key: '):])
+            # Places
+            if line.startswith('Name: '):
+                name = line[6:line.find(', typ')]
+                tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', var')]
+                variable_name = line[(line.find('variable name: ') + len('variable name: ')):line.find(', ini')]
 
-            place_teste.append(Places(name, tipo, variable_name, initial_mark, capacity, key))
+                try:
+                    initial_mark = int(line[(line.find('marking: ') + len('marking: ')):line.find(', capacity: ')])
+                except:
+                    initial_mark = int(line[(line.find('marking: ') + len('marking: ')):line.find(', key:')])
 
-        # Transitions
-        if line.startswith('name: '):
-            name = line[6:line.find(', typ')]
-            tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', ')]
-            key = int(line[line.find('key: ') + len('key: '):])
-            try:
-                priority = int(line[line.find('priority: ') + len('priority: '):line.find(', reservation')])
-            except:
-                priority = -1
-            try:
-                time_speed = line[line.find('firing time: ') + len('firing time: '):(line.find(', priority:'))]
-                time_speed = float(time_speed.replace(",", "."))
-                # se for atribuído o tempo médio, usar:
-                # time_speed = 1/time_speed
-                # se for atribuída a quantidade de disparos:
-                time_speed = time_speed
-            except:
-                time_speed = 1
+                try:
+                    capacity = float(line[line.find('capacity: ') + len('capacity: '):line.find(', key:')])
+                except:
+                    capacity = -1
 
-            transition_teste.append(Transitions(name, tipo, time_speed, priority, key))
+                key = str(line[line.find('key: ') + len('key: '):])
 
-    return (place_teste, transition_teste, arc_teste)
+                place_teste.append(Places(name, tipo, variable_name, initial_mark, capacity, key))
+
+            # Transitions
+            # aqui eu faço a divisão do código de modo a obter apenas os valores a serem armazenados na classe transições(transitions)
+            if line.startswith('name: '):
+                #
+                name = line[6:line.find(', typ')]
+                tipo = line[(line.find('typ: ') + len('typ: ')):line.find(', ')]
+                key = str(line[line.find('key: ') + len('key: '):])
+                try:
+                    priority = int(line[line.find('priority: ') + len('priority: '):line.find(', reservation')])
+                except:
+                    priority = -1
+                try:
+                    time_speed = line[line.find('firing time: ') + len('firing time: '):(line.find(', priority:'))]
+                    time_speed = float(time_speed.replace(",", "."))
+                    # se for atribuído o tempo médio, usar:
+                    # time_speed = 1/time_speed
+                    # se for atribuída a quantidade de disparos:
+                    time_speed = time_speed
+                except:
+                    time_speed = 1
+
+                transition_teste.append(Transitions(name, tipo, time_speed, priority, key))
+
+        return place_teste, transition_teste, arc_teste
+    else:
+        print("Fornecedor diferente...")
+        return place_teste, transition_teste, arc_teste
 
 
 def creating_matrix(transition, place, arco_teste):
@@ -241,9 +205,9 @@ def creating_matrix(transition, place, arco_teste):
     A função recebe as transições, lugares e os arcos
     e retorna as matrizes de entrada, saida, inibidores, habilitadores e marcação inicial
     OBS: Transições, lugares e arcos são classes definidas neste programa
-    :param transition
-    :param place
-    :param arco_teste
+    :param transition Transição da Rede
+    :param place Lugar da Rede
+    :param arco_teste Arcos da Rede
     :return:  pre_entrada, post, ini, ena, m0
     """
     # Criando matrizes de pre_entrada e de saída
@@ -271,55 +235,73 @@ def creating_matrix(transition, place, arco_teste):
                     post[i][j] = arcos.weight + post[i][j]
     return pre, post, ini, ena, m0
 
+def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex):
+    buttonExpMatrTex.config(state="normal")
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + "Gerando matriz de alcançabilidade")
+    N = prompt_entrada.get()
+    global marcacoes, disparos
+    marcacoes = marcacao_inicial.copy()
+    try:
+        N = int(N)
+    except:
+        N = 10
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + f'Realizando {N} repetições.')
 
-def creating_petri_net(petri_transition, petri_place, petri_arc):
-    net = PetriNet("RedePetriTeste")
-    init_mark = Marking()
-    for place in petri_place:
-        net.places.add(PetriNet.Place(place.name))
-        print(f"Nome do place: {place.name}")
-        init_mark[PetriNet.Place(place.name)] = place.initial_mark
-        print(init_mark[PetriNet.Place(place.name)])
-    for transition in petri_transition:
-        net.transitions.add(PetriNet.Place(transition.name, transition.key))
-    for arc in petri_arc:
-        for transition in petri_transition:
-            for place in petri_place:
-                if transition.key == arc.finish_key and place.key == arc.begin_key and arc.tipo == 'normal':
-                    utils.add_arc_from_to(PetriNet.Place(place.name),
-                                          PetriNet.Transition(transition.name, transition.key), net, arc.weight)
-                if transition.key == arc.begin_key and place.key == arc.finish_key and arc.tipo == 'normal':
-                    utils.add_arc_from_to(PetriNet.Transition(transition.name, transition.key),
-                                          PetriNet.Place(place.name), net, arc.weight)
-                if transition.key == arc.finish_key and place.key == arc.begin_key and arc.tipo == 'inhibitor':
-                    utils.add_arc_from_to(PetriNet.Place(place.name),
-                                          PetriNet.Transition(transition.name, transition.key), net, arc.weight)
-                if transition.key == arc.finish_key and place.key == arc.begin_key and arc.tipo == 'test arc':
-                    utils.add_arc_from_to(PetriNet.Place(place.name),
-                                          PetriNet.Transition(transition.name, transition.key), net, arc.weight)
-    print(net)
-    return net, init_mark
+    marcacoes, disparos = teste_marcacao(marcacao_inicial, N, prompt_saida)
+    global matriz_q
+    matriz_q = [[0] * len(disparos)] * len(disparos)
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + f'Tamanho disparos: {len(disparos)}')
+    matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
+    # Acessando os conjuntos de marcações disparadas
+    for i in range(len(disparos)):
+        # Acessando cada marcação e sua respectiva transição
+        for j in range(len(disparos.iloc[0, :])):
+            # Se o valor assinalado no disparo[i,j] for -2 significa que esta transição não ocorre para esta marcação
+            if disparos.iloc[i, j] != -2:
+                # Assimilando as taxas de transição descritas como "time_firing"
+                matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
+        # Ao final, faz-se a soma dos valores atribuidos na diagonal principal da matriz Q
+        matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + 'Matriz Q:')
+    for m in matriz_q.values:
+        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + str(m))
+    # resolvendo ax=b para x, pi*Q=*01'
+    global vetor_pi
+    vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
+                               np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
+    # a funcao do Numpy (linalg.lstsq recebe os valores da matriz Q e soluciona a equação linear não quadrática com uma
+    # aproximação adequada para a redução dos erros associados, tal como em uma linearização de um sistema.
+    print(vetor_pi[0])
+    vet_pi = pd.DataFrame(vetor_pi[0])
+    for v_pi in vetor_pi:
+        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + str(v_pi))
 
 
+# uma bateria de testes da marcacao é realizada, primeiro criamos um DataFrame para as marcacoes disparadas
+# cada transicao pode ou nao ser habilitada
 def teste_marcacao(marcacao, N, prompt_saida):
     marcacoes_disparadas = pd.DataFrame([[-1] * len(transition_teste)], columns=nome_transitions)
     # print('As marcacoes disparadas ate agora sao:')
     # print(marcacoes_disparadas)
-    m = 0
+    m = 0 # determina a posição do disparo que esta sendo investigado
+    # iniciand a marcacao teste com a marcacao inicial
     marcacoes_teste = marcacao.copy()
+    # sao feitas N repeticoes, o sistema deve ser finito ou então não é estocástico.
     for k in range(N):
         # obter uma matriz comparando a marcacao com cada uma das transicoes da matriz de entrada
-        # aqui tambem deve entrar a verificacao de inibidores e habilitadores (fazer depois)
+        #
+        # aqui tambem deve entrar a verificacao de inibidores e habilitadores (fazer depois) $$$$$$$$$$$$$$$$$$$$$
+        #
         # print("Teste da marcação:")
         # print('Teste da Entrada')
+        # aqui vamos gerar uma matriz que nos diz quando os inibibores, entrada e habilitadores nos permitem operar
         teste = in_inibidores.gt(marcacao.values)
         teste += in_inibidores.eq(marcacao.iloc[0, :] * 0)
         teste *= pre_entrada.le(marcacao.values)
         teste *= en_habilitadores.le(marcacao.values)
-
+        # dado o numero de transicoes repetimos o teste a seguir
         for i in range(len(transition_teste)):
-
-            # verificando  conjunto
+            # verificando  se o conjunto satisfaz as condicoes de uma determinada transicao
             if all(teste.loc[transition_teste[i].name, :]):
                 # print(f'Disparando: {transition_teste[i].name}')
                 marcacao = marcacao - pre_entrada.loc[transition_teste[i].name]
@@ -332,6 +314,7 @@ def teste_marcacao(marcacao, N, prompt_saida):
                     # print(marcacao)
                     # verificando se a marcacao ja existe
                     indice = marcacao_existe(marcacao, marcacoes_teste)
+                    # Se receber -1 significa que a marcacao não existe
                     if indice == -1:
                         # print('Atualizando marcacoes')
                         marcacoes_teste = pd.concat([marcacoes_teste, marcacao], ignore_index=True)
@@ -342,6 +325,7 @@ def teste_marcacao(marcacao, N, prompt_saida):
                              pd.DataFrame([[-1] * len(transition_teste)], columns=nome_transitions)],
                             ignore_index=True)
                         marcacoes_disparadas.loc[m, transition_teste[i].name] = len(marcacoes_disparadas) - 1
+                    # caso contrario a marcação já existe
                     else:
                         # print('Marcacao ja existe')
                         marcacoes_disparadas.loc[m, transition_teste[i].name] = indice
@@ -351,12 +335,14 @@ def teste_marcacao(marcacao, N, prompt_saida):
                 else:
                     # print('Eh menor que zero')
                     marcacoes_disparadas.loc[m, transition_teste[i].name] = -2
-                # print('Revertendo disparo')
 
+                # print('Revertendo disparo')
                 marcacao = marcacao + pre_entrada.loc[transition_teste[i].name]
                 # print('Marcacao atualizada')
                 # print(marcacao)
 
+            # caso o conjunto não satisfaça alguma condição de habilitadores ou inibidores, essa transição recebe
+            # o valor -2 para denotar que não pode ser disparada por esta marcação.
             else:
                 # print(f'A transição: {transition_teste[i].name} não foi disparada')
                 marcacoes_disparadas.loc[m, transition_teste[i].name] = -2
@@ -395,32 +381,17 @@ def teste_marcacao(marcacao, N, prompt_saida):
                     m = marcacoes_teste.iloc[i:(i + 1)].index
                     break
                 else:
+                    # caso todas as marcacoes tenham sido testadas
                     # print('Marcacao JA FOI testada')
                     if (i == len(marcacoes_disparadas) - 1):
                         # print('Todas as marcacoes foram testadas')
-                        return (marcacoes_teste, marcacoes_disparadas)
+                            return (marcacoes_teste, marcacoes_disparadas)
             break
         # print('Marcacoes disparadas')
         # print(marcacoes_disparadas)
 
         ## Finalizando as repeticoes de busca por novas marcacoes
     return marcacoes_teste, marcacoes_disparadas
-
-
-def imprimindo_latex(folha, folha_nome, prompt_saida):
-    """
-    Esta função recebe uma matriz ou vetor para ser impresso, esta função não retorna nada, apenas imprime no terminal
-    ou então cria um arquivo para salvar as informações.
-    :param folha:
-    :param folha_nome:
-    """
-    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'''
-Imprimindo {folha_nome}:''')
-    for f in folha.values:
-        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(f))
-    # arq_text = open('tex_matriz.txt', 'a')
-    # a = folha.style.to_latex(caption=f"matriz {folha_nome}")
-    # arq_text.write(str(a))
 
 
 def marcacao_existe(marcacao_teste, marcacoes_teste_ex):
@@ -445,77 +416,6 @@ def marcacao_existe(marcacao_teste, marcacoes_teste_ex):
     return -1
 
 
-def analisar(data):
-    # Junto ao programa deverá existir uma pasta com o arquivo exportado do VON
-    global place_teste, transition_teste, arc_teste
-    # loading_data carrega os lugares, transicoes e arcos
-    place_teste, transition_teste, arc_teste = loading_data(data)
-    global nome_transitions, nome_places
-    nome_transitions = [''] * len(transition_teste)
-    nome_places = [''] * len(place_teste)
-    # carregando os nomes dos lugares e transicoes *** importante que nao existam nomes repetidos
-    i = 0
-    for c in place_teste:
-        nome_places[i] = c.name
-        i += 1
-    i = 0
-    for l in transition_teste:
-        nome_transitions[i] = l.name
-        i += 1
-    # creating_matrix gera as matrizes Pre, Post, In, En, M0
-    # dada determinados conjuntos de [Transition], [Place], [Arc]
-
-    pre_entrada_np, post_saida_np, in_inibidores_np, en_habilitadores_np, marcacao_inicial_np = creating_matrix(
-        transition_teste, place_teste, arc_teste)
-    global pre_entrada, post_saida, in_inibidores, en_habilitadores, marcacao_inicial
-    # Reformatando dados para DataFrame da biblioteca do Pandas
-    pre_entrada = pd.DataFrame(pre_entrada_np, index=nome_transitions, columns=nome_places)
-    post_saida = pd.DataFrame(post_saida_np, index=nome_transitions, columns=nome_places)
-    in_inibidores = pd.DataFrame(in_inibidores_np, index=nome_transitions, columns=nome_places)
-    en_habilitadores = pd.DataFrame(en_habilitadores_np, index=nome_transitions, columns=nome_places)
-    marcacao_inicial = pd.DataFrame(marcacao_inicial_np, columns=nome_places)
-
-    # post_saida recebe os valores negativos por isso a soma abaixo
-    incidencia = pre_entrada + post_saida
-
-
-def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex):
-    buttonExpMatrTex.config(state="normal")
-    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ "Gerando matriz de alcançabilidade")
-    N = prompt_entrada.get()
-    global marcacoes, disparos
-    marcacoes = marcacao_inicial.copy()
-    try:
-        N = int(N)
-    except:
-        N = 10
-    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'Realizando {N} repetições.')
-    marcacoes, disparos = teste_marcacao(marcacao_inicial, N, prompt_saida)
-    matriz_q = [[0] * len(disparos)] * len(disparos)
-    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ f'Tamanho disparos: {len(disparos)}')
-    matriz_q = pd.DataFrame(matriz_q, index=disparos.index, columns=disparos.index)
-    for i in range(len(disparos)):
-        for j in range(len(disparos.iloc[0, :])):
-            if disparos.iloc[i, j] != -2:
-                matriz_q.iloc[i, disparos.iloc[i, j]] = transition_teste[j].time_firing
-        matriz_q.iloc[i, i] = -sum(matriz_q.iloc[i, :])
-    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ 'Matriz Q:')
-    for m in matriz_q.values:
-        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(m))
-    # resolvendo ax=b para x, pi*Q=*01'
-    vetor_pi = np.linalg.lstsq(np.r_[np.transpose(matriz_q.values), [[1] * len(matriz_q.iloc[0, :])]],
-                               np.r_[np.zeros(len(matriz_q)), [1]], rcond=None)
-    for v_pi in vetor_pi:
-        prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n"+ str(v_pi))
-
-    if (1 == 0):  # input("Converter arquivos para PM4PY? (S/N): ") == "S"):
-        rdp_teste, rdp_marcacao_inicial = creating_petri_net(transition_teste, place_teste, arc_teste)
-        print(rdp_teste)
-        print(rdp_marcacao_inicial)
-        rdp_marcacao_final = pm.objects.petri_net.utils.final_marking.discover_final_marking(rdp_teste)
-        print(rdp_marcacao_final)
-
-
 def imprimir_tex(prompt_saida):
     # marcacoes.to_csv(r'.\my_data.csv', index=False)
     imprimindo_latex(marcacoes, 'marcacoes', prompt_saida)
@@ -525,6 +425,37 @@ def imprimir_tex(prompt_saida):
     imprimindo_latex(en_habilitadores, "habilitadores", prompt_saida)
     imprimindo_latex(marcacao_inicial, "marcacao inicial", prompt_saida)
     imprimindo_latex(disparos, "marcacoes disparadas", prompt_saida)
+    imprimindo_latex(vetor_pi[0], "Vetor Pi", prompt_saida)
+    imprimindo_latex(matriz_q, "Matriz Q", prompt_saida)
+    print(marcacoes)
+    print(post_saida)
+    print(pre_entrada)
+    print(in_inibidores)
+    print(en_habilitadores)
+    print(marcacao_inicial)
+    print(disparos)
+    print(vetor_pi)
+    print(matriz_q)
+
+
+def imprimindo_latex(folha, folha_nome, prompt_saida):
+    #    """
+    #    Esta função recebe uma matriz ou vetor para ser impresso, esta função não retorna nada, apenas imprime no terminal
+    #    ou então cria um arquivo para salvar as informações.
+    #    :param folha:
+    #    :param folha_nome:
+    #    """
+    prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + f'Imprimindo {folha_nome}:')
+    try:
+        for f in folha.values:
+            prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + str(f))
+    except:
+        for f in folha:
+            prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + str(f))
+    # arq_text = open('tex_matriz.txt', 'a')
+    # a = folha.style.to_latex(caption=f"matriz {folha_nome}")
+    # arq_text.write(str(a))
+
 
 
 class App:
@@ -551,8 +482,18 @@ class App:
         buttonAbrir["fg"] = "#000000"
         buttonAbrir["justify"] = "center"
         buttonAbrir["text"] = "Abrir"
-        buttonAbrir.place(x=10, y=320, width=106, height=42)
+        buttonAbrir.place(x=10, y=260, width=106, height=42)
         buttonAbrir["command"] = (lambda: self.clickOpen(buttonGerArvAlc, saidaTextoPrompt))
+
+        buttonLimparTela = tk.Button(root)
+        buttonLimparTela["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times', size=10)
+        buttonLimparTela["font"] = ft
+        buttonLimparTela["fg"] = "#000000"
+        buttonLimparTela["justify"] = "center"
+        buttonLimparTela["text"] = "Limpar Tela"
+        buttonLimparTela.place(x=140, y=260, width=106, height=42)
+        buttonLimparTela["command"] = (lambda: self.clickLimparTela(saidaTextoPrompt, saidaTextoLabel))
 
         buttonExpMatrTex = tk.Button(root)
         buttonExpMatrTex["bg"] = "#f0f0f0"
@@ -585,18 +526,8 @@ class App:
         buttonGerModJson["justify"] = "center"
         buttonGerModJson["text"] = "Gerar Modelo \nem Json"
         buttonGerModJson.place(x=140, y=320, width=107, height=41)
-        buttonGerModJson["command"] = self.buttonGerModJson_command
+        buttonGerModJson["command"] = ""
         buttonGerModJson["state"] = 'disabled'
-
-        buttonSobrando = tk.Button(root)
-        buttonSobrando["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times', size=10)
-        buttonSobrando["font"] = ft
-        buttonSobrando["fg"] = "#000000"
-        buttonSobrando["justify"] = "center"
-        buttonSobrando["text"] = "Sobrando"
-        buttonSobrando.place(x=140, y=370, width=109, height=41)
-        buttonSobrando["command"] = (lambda: self.ImprimirLabel(saidaTextoLabel, entradaTexto.get()))
 
         buttonOk = tk.Button(root)
         buttonOk["bg"] = "#f0f0f0"
@@ -620,9 +551,8 @@ class App:
         barra_rolagem = tk.Scrollbar(frame, orient='vertical', command=saidaTextoLabel.yview)
         barra_rolagem.pack(side="right", fill="y")
 
-        saidaTextoLabel.configure(yscrollcommand = barra_rolagem.set)
-        saidaTextoLabel.bind('<Configure>', lambda e:canva.configure(scrollregion=canva.bbox("all")))
-
+        saidaTextoLabel.configure(yscrollcommand=barra_rolagem.set)
+        saidaTextoLabel.bind('<Configure>', lambda e: canva.configure(scrollregion=canva.bbox("all")))
 
         saidaTextoPrompt = tk.Message(root)
         saidaTextoPrompt["bg"] = "#e3e3e3"
@@ -633,7 +563,7 @@ class App:
         saidaTextoPrompt["justify"] = "left"
         saidaTextoPrompt["text"] = ""
         saidaTextoPrompt["width"] = 240
-        saidaTextoPrompt.place(x=10, y=10, width=227, height=300)
+        saidaTextoPrompt.place(x=10, y=10, width=227, height=240)
 
         entradaTexto = tk.Entry(root)
         entradaTexto["borderwidth"] = "1px"
@@ -649,7 +579,17 @@ class App:
         """
         Exibir na label da direita
         """
-        text_sai.insert(text_sai.index("end+1c linestart"), "\n"+text)
+        text_sai.insert(text_sai.index("end+1c linestart"), "\n" + text)
+
+    def ImprimirPrompt(self, textoPrompt, text):
+        """
+        Exibir na label da direita
+        """
+        print(textoPrompt['text'])
+
+    def clickLimparTela(self, textoPrompt, textoLabel):
+        textoPrompt.config(text="")
+        textoLabel.delete("0.0", "end")
 
     def clickOpen(self, buttonG, textoPrompt):
         """
@@ -657,16 +597,13 @@ class App:
         """
         self.filename = filedialog.askopenfile(initialdir="./RdP", title="Select file",
                                                filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
-        textoPrompt.config(text=f"Abrindo: {self.filename.name}", justify="left")
+        textoPrompt.config(text=f'Abrindo: {self.filename.name}', justify="left")
         analisar(self.filename)
         buttonG.config(state="normal")
 
     def buttonOk_command(self, entrada):
         valor = entrada.get()
         return valor
-
-    def buttonGerModJson_command(self):
-        print('commad')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,30 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: Pronta, typ: discrete, variable name: pronta, initial marking: 1, capacity: -1, key: 0
+     Name: Manutencao, typ: discrete, variable name: manutencao, initial marking: 0, capacity: -1, key: 1
+     Name: Trabalhando, typ: discrete, variable name: trabalhando, initial marking: 0, capacity: -1, key: 2
+ 
+Transitions
+     name: consertou, typ: discrete, firing time: 15, priority: 1, reservation: 0, key: 3
+     name: desligou, typ: discrete, firing time: 10, priority: 1, reservation: 0, key: 4
+     name: ligou, typ: discrete, firing time: 2, priority: 1, reservation: 0, key: 5
+     name: quebrou, typ: discrete, firing time: 1, priority: 1, reservation: 0, key: 6
+ 
+Arcs
+     from Trabalhando (key=2) to quebrou (key=6), typ: normal, weight: 1
+     from quebrou (key=6) to Manutencao (key=1), typ: normal, weight: 1
+     from Manutencao (key=1) to consertou (key=3), typ: normal, weight: 1
+     from consertou (key=3) to Trabalhando (key=2), typ: normal, weight: 1
+     from desligou (key=4) to Pronta (key=0), typ: normal, weight: 1
+     from Pronta (key=0) to ligou (key=5), typ: normal, weight: 1
+     from ligou (key=5) to Trabalhando (key=2), typ: normal, weight: 1
+     from Trabalhando (key=2) to desligou (key=4), typ: normal, weight: 1
+ 
