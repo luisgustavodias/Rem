@@ -1,0 +1,22 @@
+file version: 2,7
+=============================
+Object: Empty Object
+     - Inherited from: Empty Object
+     - Object name: New Object
+Number of child objects: 0
+=========================
+ 
+ 
+Places
+     Name: P, typ: discrete, variable name: m1, initial marking: 1, capacity: -1, key: 0
+     Name: P3, typ: discrete, variable name: m2, initial marking: 1, capacity: -1, key: 1
+     Name: P2, typ: discrete, variable name: m3, initial marking: 0, capacity: -1, key: 2
+ 
+Transitions
+     name: T, typ: discrete, firing time: 0, priority: 1, reservation: 0, key: 3
+ 
+Arcs
+     from P3 (key=1) to T (key=3), typ: inhibitor, weight: 1
+     from T (key=3) to P2 (key=2), typ: normal, weight: 1
+     from P (key=0) to T (key=3), typ: normal, weight: 1
+ 

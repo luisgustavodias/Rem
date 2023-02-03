@@ -86,14 +86,22 @@ class Arcs:
 def analisar(data):
     ###### AQUI EH UM LUGAR QUE PRECISA MELHORAR, INICIANDO OS DADOS COM NUMPY E CONVERTENDO PRA PANDAS?
 
-    # Junto ao programa deverá existir uma pasta com o arquivo exportado do VON
+    # Junto ao programa deverá existir uma pasta com o arquivo exportado do VON ou do WebApn do Arruda
     global place_teste, transition_teste, arc_teste
     # loading_data carrega os lugares, transicoes e arcos
     place_teste, transition_teste, arc_teste = loading_data(data)
     global nome_transitions, nome_places
     nome_transitions = [''] * len(transition_teste)
     nome_places = [''] * len(place_teste)
-    # carregando os nomes dos lugares e transicoes *** importante que nao existam nomes repetidos
+    # aqui faz-se o teste de verificação de nomes repetidos
+
+    if nome_repetido(place_teste):
+        return "Erro Lugares com nomes iguais"
+    if nome_repetido(transition_teste):
+        return "Erro Transições com nomes iguais"
+
+    #
+
     i = 0
     for c in place_teste:
         nome_places[i] = c.name
@@ -118,6 +126,7 @@ def analisar(data):
     en_habilitadores = pd.DataFrame(en_habilitadores_np, index=nome_transitions, columns=nome_places)
     marcacao_inicial = pd.DataFrame(marcacao_inicial_np, columns=nome_places)
     print(marcacao_inicial)
+    return "Dados carregados"
 
 
 def loading_data(dados):
@@ -133,9 +142,7 @@ def loading_data(dados):
     place_teste.pop(0)
     transition_teste = [Transitions('', '', '', 1, "")]
     transition_teste.pop(0)
-
     fornecedor = "erro"
-
     h = dados.read(1)
 
     if h == "{":
@@ -143,13 +150,11 @@ def loading_data(dados):
     elif h == "f":
         fornecedor = "VON"
     else:
-        h = "erro"
-
-
+        return "Arquivo desconhecido"
 
     # fatiando em linhas para leitura dos dados no caso dos arquivo gerado em VON
     if fornecedor == "VON":
-        print("Carregando arquivo do Virtual Object Net++")
+        print("Arquivo exportado do software Virtual Object Net++ Dr. Rainer Drath service@ParamSoft.de version 2.7a")
         for line in dados:
             line = line.strip('     ')
             line = line.rstrip()
@@ -215,7 +220,7 @@ def loading_data(dados):
         # Aqui fazer como se carrega-se do VON criado pelo Paulo Arruda ou pelo CPNTools, a ideia é manter o formato com
         # transições, lugares e arcos definidos por este template para os devidos cálculos, tal como realizado acima,
         # destrinchando o texto para obter as informações de cada uma das classes
-        print("Carregando arquivo do Arruda")
+        print("Arquivo do Arruda")
 
         with open(dados.name, 'r') as file:
             conteudo = file.read()
@@ -237,6 +242,21 @@ def loading_data(dados):
     elif (fornecedor == "erro"):
         print("Erro em relacao ao nome do fornecedor...")
         return place_teste, transition_teste, arc_teste
+
+
+def nome_repetido(vetor):
+    i = 1
+    aux_i = 1
+    for v in vetor:
+        while i < len(vetor):
+            print(vetor[i].name)
+            print(v.name)
+            if vetor[i].name == v.name:
+                return True
+            i += 1
+        aux_i += 1
+        i = aux_i
+    return False
 
 
 def creating_matrix(transition, place, arco_teste):
@@ -274,6 +294,7 @@ def creating_matrix(transition, place, arco_teste):
                 if transition[i].key == arcos.begin_key and place[j].key == arcos.finish_key and arcos.tipo == 'normal':
                     post[i][j] = arcos.weight + post[i][j]
     return pre, post, ini, ena, m0
+
 
 def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex):
     buttonExpMatrTex.config(state="normal")
@@ -497,7 +518,6 @@ def imprimindo_latex(folha, folha_nome, prompt_saida):
     # arq_text.write(str(a))
 
 
-
 class App:
     def __init__(self, root):
         entrada_texto_var = tk.StringVar()
@@ -523,7 +543,7 @@ class App:
         buttonAbrir["justify"] = "center"
         buttonAbrir["text"] = "Abrir"
         buttonAbrir.place(x=10, y=260, width=106, height=42)
-        buttonAbrir["command"] = (lambda: self.clickOpen(buttonGerArvAlc, saidaTextoPrompt))
+        buttonAbrir["command"] = (lambda: self.clickOpen(buttonGerArvAlc, buttonExpMatrTex, saidaTextoPrompt))
 
         buttonLimparTela = tk.Button(root)
         buttonLimparTela["bg"] = "#f0f0f0"
@@ -557,17 +577,6 @@ class App:
         buttonGerArvAlc["command"] = lambda: gerar_matriz_alcancabilidade(saidaTextoLabel, entradaTexto,
                                                                           buttonExpMatrTex)
         buttonGerArvAlc["state"] = 'disabled'
-
-        buttonGerModJson = tk.Button(root)
-        buttonGerModJson["bg"] = "#f0f0f0"
-        ft = tkFont.Font(family='Times', size=10)
-        buttonGerModJson["font"] = ft
-        buttonGerModJson["fg"] = "#000000"
-        buttonGerModJson["justify"] = "center"
-        buttonGerModJson["text"] = "Gerar Modelo \nem Json"
-        buttonGerModJson.place(x=140, y=320, width=107, height=41)
-        buttonGerModJson["command"] = ""
-        buttonGerModJson["state"] = 'disabled'
 
         buttonOk = tk.Button(root)
         buttonOk["bg"] = "#f0f0f0"
@@ -623,7 +632,7 @@ class App:
 
     def ImprimirPrompt(self, textoPrompt, text):
         """
-        Exibir na label da direita
+        Exibir na label da esquerda
         """
         print(textoPrompt['text'])
 
@@ -631,15 +640,22 @@ class App:
         textoPrompt.config(text="")
         textoLabel.delete("0.0", "end")
 
-    def clickOpen(self, buttonG, textoPrompt):
+    def clickOpen(self, buttonE, buttonG, textoPrompt):
         """
         Abrir RedePetri
         """
         self.filename = filedialog.askopenfile(initialdir="./RdP", title="Select file",
                                                filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
         textoPrompt.config(text=f'Abrindo: {self.filename.name}', justify="left")
-        analisar(self.filename)
-        buttonG.config(state="normal")
+        texto = analisar(self.filename)
+        if texto == "Dados carregados":
+            buttonG.config(state="normal")
+            buttonE.config(state="normal")
+        else:
+            buttonG.config(state="disable")
+            buttonE.config(state="disable")
+        textoPrompt.config(text=texto, justify="left")
+
 
     def buttonOk_command(self, entrada):
         valor = entrada.get()

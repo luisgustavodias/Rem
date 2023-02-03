@@ -1,0 +1,14 @@
+v1.0
+Importação dos arquivos exportados em VON para o python e tratamento para geração da árvore de alcançabilidade
+Tratamento dos tempos como tempo médio de transição para Redes Petri Estocásticas
+Análise por Cadeia de Markov dos estados alcançáveis da Rede Petri
+
+v1.1
+Implementação da interface gráfica através da biblioteca TKinter
+
+v2.1
+Importação de dados exportados na WebAPN criado pelo Paulo Arruda em seu Trabalho Final de Graduação
+
+v2.2 
+Implementação da função nomes_iguais para verificar se existem nomes iguais visto que a indexação é realizada baseada nestes nomes
+Implementação do aviso relativo à nomes iguais
