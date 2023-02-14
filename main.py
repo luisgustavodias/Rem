@@ -228,14 +228,20 @@ def loading_data(dados):
 
             print(data["name"])
             for transition in data["transitions"]:
-                transition_teste.append(Transitions(transition["name"], "normal", float(transition["delay"].replace(",", ".")), 1, transition["id"]))
+                print(transition["delay"])
+                if transition["delay"] != "":
+                    transition_teste.append(Transitions(transition["name"], "normal", float(transition["delay"].replace(",", ".")), 1, transition["id"]))
+                else:
+                    transition_teste.append(Transitions(transition["name"], "normal", 0, 1, transition["id"]))
             for place in data["places"]:
                 place_teste.append(Places(place["name"], "dicrete", place["name"], int(place["initialMark"]), -1, place["id"]))
             for arc in data["arcs"]:
                 if arc["arcType"] == "Input":
                     arc_teste.append(Arcs(arc["placeId"], arc["transId"], float(arc["weight"]), "normal"))
-                else:
-                    arc_teste.append(Arcs(arc["transId"], arc["placeId"], float(arc["weight"]), "normal"))
+                elif arc["arcType"] == "Test":
+                    arc_teste.append(Arcs(arc["transId"], arc["placeId"], float(arc["weight"]), 'test arc'))
+                elif arc["arcType"] == "Inhibitor":
+                    arc_teste.append(Arcs(arc["transId"], arc["placeId"], float(arc["weight"]), "inhibitor"))
 
 
         return place_teste, transition_teste, arc_teste
@@ -305,7 +311,7 @@ def gerar_matriz_alcancabilidade(prompt_saida, prompt_entrada, buttonExpMatrTex)
     try:
         N = int(N)
     except:
-        N = 10
+        N = 200
     prompt_saida.insert(prompt_saida.index("end+1c linestart"), "\n" + f'Realizando {N} repetições.')
 
     marcacoes, disparos = teste_marcacao(marcacao_inicial, N, prompt_saida)
@@ -637,7 +643,6 @@ class App:
         print(textoPrompt['text'])
 
     def clickLimparTela(self, textoPrompt, textoLabel):
-        textoPrompt.config(text="")
         textoLabel.delete("0.0", "end")
 
     def clickOpen(self, buttonE, buttonG, textoPrompt):
@@ -654,7 +659,8 @@ class App:
         else:
             buttonG.config(state="disable")
             buttonE.config(state="disable")
-        textoPrompt.config(text=texto, justify="left")
+        nome_arquivo = self.filename.name[self.filename.name.find("RdP/")+len("RdP/"):]
+        textoPrompt.config(text=f"Arquivo {nome_arquivo} aberto", justify="left")
 
 
     def buttonOk_command(self, entrada):
